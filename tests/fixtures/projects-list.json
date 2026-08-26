@@ -15,11 +15,7 @@
         "name": "Frontend"
       }
     ],
-    "features": [
-      "alert-filters",
-      "minidump",
-      "similarity-view"
-    ],
+    "features": ["alert-filters", "minidump", "similarity-view"],
     "options": {
       "sentry:resolve_age": 0,
       "filters:blacklisted_ips": ""
@@ -29,10 +25,7 @@
         "dateFinished": "2025-06-01T00:00:00.000Z"
       }
     },
-    "access": [
-      "project:read",
-      "project:write"
-    ],
+    "access": ["project:read", "project:write"],
     "avatar": {
       "avatarType": "letter_avatar",
       "avatarUuid": null
