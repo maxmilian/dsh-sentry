@@ -91,7 +91,7 @@ Link: <https://…?&cursor=0:100:0>; rel="next"; results="true"; cursor="0:100:0
 | `EVENT_ID_PATTERN` | `/^[0-9a-fA-F]{32}$/` | `event_id` 參數 |
 | `CURSOR_PATTERN` | `/^-?\d+:-?\d+:[01]$/` | `cursor` 參數 |
 
-`issue` 參數的判定順序：先試 `NUMERIC_ID_PATTERN`（純數字一律當數字 id，`123-456` 因此不會誤判成 short id）；不符則 `toUpperCase()` 後試 `SHORT_ID_PATTERN`；再不符丟 `INVALID_INPUT`。
+`issue` 參數的判定順序：先試 `NUMERIC_ID_PATTERN`（純數字一律當數字 id）；注意 `123-456` 含連字號，不是純數字，仍會走 short id 路徑 —— 這是刻意的，Sentry project slug 允許數字開頭，`123-456` 本來就是合法 short id；不符則 `toUpperCase()` 後試 `SHORT_ID_PATTERN`；再不符丟 `INVALID_INPUT`。
 
 ---
 
