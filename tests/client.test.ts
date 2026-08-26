@@ -1,9 +1,42 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { SentryClient } from '../src/client.js'
 import { resolveConfig } from '../src/config.js'
 import { SentryApiError } from '../src/errors.js'
 
 const ENV = { SENTRY_AUTH_TOKEN: 'env-token', SENTRY_ORG: 'env-org' }
+
+type MockFetch = (input: string | URL | Request, init?: RequestInit) => Promise<Response>
+
+const BASE_CONFIG = {
+  baseUrl: 'https://sentry.example.com/',
+  token: 'secret-token',
+  org: 'acme',
+  locale: 'en',
+  includeFrameVars: false,
+  requestTimeoutMs: 1_000,
+  maxResponseBytes: 10_000,
+} as const
+
+function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    ...init,
+    headers: { 'content-type': 'application/json', ...(init.headers ?? {}) },
+  })
+}
+
+function createClient(fetchMock: MockFetch): SentryClient {
+  return new SentryClient(BASE_CONFIG, fetchMock)
+}
+
+function calledUrl(fetchMock: ReturnType<typeof vi.fn<MockFetch>>, index = 0): URL {
+  return new URL(String(fetchMock.mock.calls[index]?.[0]))
+}
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 describe('configuration', () => {
   it('prefers plugin config over environment variables', () => {
@@ -96,5 +129,202 @@ describe('configuration', () => {
     } catch (error) {
       expect((error as SentryApiError).code).toBe('INVALID_CONFIG')
     }
+  })
+})
+
+describe('transport', () => {
+  it('sends a bearer token and accepts a JSON object body', async () => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(jsonResponse({ id: '1' }))
+    const result = await createClient(fetchMock).getIssue('123')
+
+    expect(calledUrl(fetchMock).toString()).toBe('https://sentry.example.com/api/0/issues/123/')
+    const init = fetchMock.mock.calls[0]?.[1]
+    expect(init?.method).toBe('GET')
+    expect((init?.headers as Record<string, string>).Authorization).toBe('Bearer secret-token')
+    expect(result.data).toEqual({ id: '1' })
+  })
+
+  it('accepts an array top level', async () => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(jsonResponse([{ id: '1' }]))
+    const result = await createClient(fetchMock).searchIssues({})
+
+    expect(result.data).toEqual([{ id: '1' }])
+  })
+
+  it.each(['"text"', '42', 'null'])('rejects the scalar top level %s', async (body) => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(new Response(body, { headers: { 'content-type': 'application/json' } }))
+
+    await expect(createClient(fetchMock).getIssue('1')).rejects.toMatchObject({
+      code: 'INVALID_RESPONSE',
+    })
+  })
+
+  it('rejects a non-JSON content type and broken JSON on 2xx', async () => {
+    const html = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(new Response('<html>', { headers: { 'content-type': 'text/html' } }))
+    await expect(createClient(html).getIssue('1')).rejects.toMatchObject({
+      code: 'INVALID_RESPONSE',
+    })
+
+    const broken = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(new Response('{oops', { headers: { 'content-type': 'application/json' } }))
+    await expect(createClient(broken).getIssue('1')).rejects.toMatchObject({
+      code: 'INVALID_RESPONSE',
+    })
+  })
+
+  it('parses the Link header only when more results exist', async () => {
+    const withNext = vi.fn<MockFetch>().mockResolvedValue(
+      jsonResponse([], {
+        headers: {
+          link: '<https://x/?cursor=0:100:0>; rel="next"; results="true"; cursor="0:100:0"',
+        },
+      }),
+    )
+    expect((await createClient(withNext).searchIssues({})).meta.nextCursor).toBe('0:100:0')
+
+    const exhausted = vi.fn<MockFetch>().mockResolvedValue(
+      jsonResponse([], {
+        headers: {
+          link: '<https://x/?cursor=0:100:0>; rel="next"; results="false"; cursor="0:100:0"',
+        },
+      }),
+    )
+    expect((await createClient(exhausted).searchIssues({})).meta.nextCursor).toBeUndefined()
+
+    const malformed = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(jsonResponse([], { headers: { link: 'garbage' } }))
+    expect((await createClient(malformed).searchIssues({})).meta.nextCursor).toBeUndefined()
+  })
+
+  it('parses X-Hits only when it is a plausible integer', async () => {
+    const good = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(jsonResponse([], { headers: { 'x-hits': '431' } }))
+    expect((await createClient(good).searchIssues({})).meta.matchingCount).toBe(431)
+
+    for (const value of ['abc', '1'.repeat(11), '-1']) {
+      const bad = vi
+        .fn<MockFetch>()
+        .mockResolvedValue(jsonResponse([], { headers: { 'x-hits': value } }))
+      expect((await createClient(bad).searchIssues({})).meta.matchingCount).toBeUndefined()
+    }
+  })
+
+  it('aborts on an oversized content-length and on an oversized stream', async () => {
+    const declared = vi.fn<MockFetch>().mockResolvedValue(
+      new Response('{}', {
+        headers: { 'content-type': 'application/json', 'content-length': '999999' },
+      }),
+    )
+    await expect(createClient(declared).getIssue('1')).rejects.toMatchObject({
+      code: 'RESPONSE_TOO_LARGE',
+      message: expect.stringContaining('configured maximum'),
+    })
+
+    const streamed = vi.fn<MockFetch>().mockResolvedValue(jsonResponse({ pad: 'x'.repeat(20_000) }))
+    await expect(createClient(streamed).getIssue('1')).rejects.toMatchObject({
+      code: 'RESPONSE_TOO_LARGE',
+    })
+  })
+
+  it('reads a filtered detail from a 400 body on search', async () => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(
+      jsonResponse(
+        { detail: 'Invalid query. "foo" is not a supported search key' },
+        {
+          status: 400,
+        },
+      ),
+    )
+
+    await expect(createClient(fetchMock).searchIssues({ query: 'foo:bar' })).rejects.toMatchObject({
+      code: 'INVALID_QUERY',
+      detail: 'Invalid query. "foo" is not a supported search key',
+    })
+  })
+
+  it.each([
+    [
+      'html',
+      new Response('<html>err</html>', { status: 400, headers: { 'content-type': 'text/html' } }),
+    ],
+    [
+      'broken json',
+      new Response('{oops', { status: 400, headers: { 'content-type': 'application/json' } }),
+    ],
+  ])('falls back to the static 400 message for a %s body', async (_label, response) => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(response)
+
+    const error = await createClient(fetchMock)
+      .searchIssues({})
+      .catch((thrown: SentryApiError) => thrown)
+
+    expect(error).toMatchObject({ code: 'INVALID_QUERY', detail: undefined })
+    expect((error as SentryApiError).message).toBe(
+      'Sentry rejected the search query. Check the Sentry search syntax.',
+    )
+  })
+
+  it.each([401, 403, 404, 500])('never leaks a %i response body', async (status) => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(jsonResponse({ detail: 'leak-me' }, { status }))
+
+    const error = await createClient(fetchMock)
+      .getIssue('1')
+      .catch((thrown: SentryApiError) => thrown)
+
+    expect((error as SentryApiError).message).not.toContain('leak-me')
+    expect(JSON.stringify((error as SentryApiError).toJSON())).not.toContain('leak-me')
+  })
+
+  it('never leaks the token in an error', async () => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(jsonResponse({}, { status: 500 }))
+
+    const error = await createClient(fetchMock)
+      .getIssue('1')
+      .catch((thrown: SentryApiError) => thrown)
+
+    expect((error as SentryApiError).message).not.toContain('secret-token')
+    expect(JSON.stringify((error as SentryApiError).toJSON())).not.toContain('secret-token')
+  })
+
+  it('preserves Retry-After on 429', async () => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(jsonResponse({}, { status: 429, headers: { 'retry-after': '30' } }))
+
+    await expect(createClient(fetchMock).getIssue('1')).rejects.toMatchObject({
+      code: 'RATE_LIMITED',
+      retryAfter: '30',
+    })
+  })
+
+  it('reports a timeout', async () => {
+    vi.useFakeTimers()
+    const hang = vi.fn<MockFetch>().mockImplementation(() => new Promise(() => {}))
+    const timedOut = createClient(hang).getIssue('1')
+    await vi.advanceTimersByTimeAsync(1_001)
+    await expect(timedOut).rejects.toMatchObject({ code: 'REQUEST_TIMEOUT' })
+  })
+
+  it('honours caller aborts and reports network failures', async () => {
+    const controller = new AbortController()
+    controller.abort()
+    const aborted = vi.fn<MockFetch>().mockRejectedValue(new Error('aborted'))
+    await expect(createClient(aborted).getIssue('1', controller.signal)).rejects.toMatchObject({
+      code: 'REQUEST_ABORTED',
+    })
+
+    const offline = vi.fn<MockFetch>().mockRejectedValue(new TypeError('fetch failed'))
+    await expect(createClient(offline).getIssue('1')).rejects.toMatchObject({
+      code: 'NETWORK_ERROR',
+    })
   })
 })
