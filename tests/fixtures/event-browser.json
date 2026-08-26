@@ -1,0 +1,724 @@
+{
+  "id": "e3",
+  "eventID": "cccccccccccccccccccccccccccccccc",
+  "groupID": "5003",
+  "projectID": "11",
+  "title": "Unhandled promise rejection",
+  "platform": "javascript",
+  "dateCreated": "2026-08-26T12:00:00.000Z",
+  "tags": [
+    {
+      "key": "browser",
+      "value": "Chrome 140"
+    }
+  ],
+  "entries": [
+    {
+      "type": "threads",
+      "data": {
+        "values": [
+          {
+            "id": 0,
+            "name": "worker",
+            "crashed": false,
+            "current": false,
+            "stacktrace": {
+              "frames": [
+                {
+                  "filename": "worker.js",
+                  "absPath": "/build/agent/workspace/worker.js",
+                  "function": "fn_10",
+                  "lineNo": 10,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "worker",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_10",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/worker.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                }
+              ]
+            }
+          },
+          {
+            "id": 1,
+            "name": "main",
+            "crashed": true,
+            "current": true,
+            "stacktrace": {
+              "frames": [
+                {
+                  "filename": "app/main0.js",
+                  "absPath": "/build/agent/workspace/app/main0.js",
+                  "function": "fn_20",
+                  "lineNo": 20,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.main0",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_20",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/main0.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/main1.js",
+                  "absPath": "/build/agent/workspace/app/main1.js",
+                  "function": "fn_21",
+                  "lineNo": 21,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "app.main1",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_21",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/main1.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/main2.js",
+                  "absPath": "/build/agent/workspace/app/main2.js",
+                  "function": "fn_22",
+                  "lineNo": 22,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.main2",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_22",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/main2.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/main3.js",
+                  "absPath": "/build/agent/workspace/app/main3.js",
+                  "function": "fn_23",
+                  "lineNo": 23,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "app.main3",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_23",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/main3.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/main4.js",
+                  "absPath": "/build/agent/workspace/app/main4.js",
+                  "function": "fn_24",
+                  "lineNo": 24,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.main4",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_24",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/main4.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/main5.js",
+                  "absPath": "/build/agent/workspace/app/main5.js",
+                  "function": "fn_25",
+                  "lineNo": 25,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "app.main5",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_25",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/main5.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "breadcrumbs",
+      "data": {
+        "values": [
+          {
+            "timestamp": "2026-08-26T12:00:00.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:01.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #1",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:02.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #2",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:03.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #3",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:04.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #4",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:05.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #5",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:06.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #6",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:07.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #7",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:08.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #8",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:09.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #9",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:10.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #10",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:11.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #11",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:12.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #12",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:13.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #13",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:14.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #14",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:15.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #15",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:16.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #16",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:17.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #17",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:18.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #18",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:19.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #19",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:20.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #20",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:21.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #21",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:22.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #22",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:23.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #23",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:24.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #24",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:25.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #25",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:26.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #26",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:27.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #27",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:28.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #28",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:29.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #29",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:30.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #30",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:31.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #31",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:32.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #32",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:33.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #33",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:34.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #34",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:35.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #35",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:36.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #36",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:37.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #37",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:38.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #38",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:39.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #39",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:40.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #40",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:41.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #41",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:42.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #42",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:43.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #43",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          },
+          {
+            "timestamp": "2026-08-26T12:00:44.000Z",
+            "type": "default",
+            "category": "ui.click",
+            "level": "info",
+            "message": "click #44",
+            "data": {
+              "extra": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "event_id": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "request",
+      "data": {
+        "method": "GET",
+        "url": "https://app.example.com/dashboard",
+        "headers": [
+          [
+            "Cookie",
+            "sid=SEKRET"
+          ]
+        ]
+      }
+    }
+  ],
+  "contexts": {
+    "browser": {
+      "name": "Chrome",
+      "version": "140.0",
+      "type": "browser"
+    }
+  },
+  "sdk": {
+    "name": "sentry.javascript.browser",
+    "version": "8.30.0"
+  }
+}

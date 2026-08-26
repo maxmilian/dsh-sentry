@@ -1,0 +1,665 @@
+{
+  "id": "e1",
+  "eventID": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "groupID": "5001",
+  "projectID": "11",
+  "title": "TypeError: Cannot read properties of undefined",
+  "message": "Cannot read properties of undefined (reading 'total')",
+  "culprit": "app/routes/checkout.tsx in submitOrder",
+  "platform": "node",
+  "dateCreated": "2026-08-26T10:00:00.000Z",
+  "dateReceived": "2026-08-26T10:00:01.000Z",
+  "size": 123456,
+  "tags": [
+    {
+      "key": "release",
+      "value": "1.2.0"
+    },
+    {
+      "key": "environment",
+      "value": "production"
+    },
+    {
+      "key": "level",
+      "value": "error"
+    },
+    {
+      "key": "sentry:release",
+      "value": "1.2.0"
+    },
+    {
+      "key": "session_id",
+      "value": "SEKRET"
+    },
+    {
+      "key": "auth_token",
+      "value": "SEKRET"
+    },
+    {
+      "key": "tag_0",
+      "value": "value_0"
+    },
+    {
+      "key": "tag_1",
+      "value": "value_1"
+    },
+    {
+      "key": "tag_2",
+      "value": "value_2"
+    },
+    {
+      "key": "tag_3",
+      "value": "value_3"
+    },
+    {
+      "key": "tag_4",
+      "value": "value_4"
+    },
+    {
+      "key": "tag_5",
+      "value": "value_5"
+    },
+    {
+      "key": "tag_6",
+      "value": "value_6"
+    },
+    {
+      "key": "tag_7",
+      "value": "value_7"
+    },
+    {
+      "key": "tag_8",
+      "value": "value_8"
+    },
+    {
+      "key": "tag_9",
+      "value": "value_9"
+    },
+    {
+      "key": "tag_10",
+      "value": "value_10"
+    },
+    {
+      "key": "tag_11",
+      "value": "value_11"
+    },
+    {
+      "key": "tag_12",
+      "value": "value_12"
+    },
+    {
+      "key": "tag_13",
+      "value": "value_13"
+    },
+    {
+      "key": "tag_14",
+      "value": "value_14"
+    },
+    {
+      "key": "tag_15",
+      "value": "value_15"
+    },
+    {
+      "key": "tag_16",
+      "value": "value_16"
+    },
+    {
+      "key": "tag_17",
+      "value": "value_17"
+    },
+    {
+      "key": "tag_18",
+      "value": "value_18"
+    },
+    {
+      "key": "tag_19",
+      "value": "value_19"
+    },
+    {
+      "key": "tag_20",
+      "value": "value_20"
+    },
+    {
+      "key": "tag_21",
+      "value": "value_21"
+    },
+    {
+      "key": "tag_22",
+      "value": "value_22"
+    },
+    {
+      "key": "tag_23",
+      "value": "value_23"
+    },
+    {
+      "key": "tag_24",
+      "value": "value_24"
+    },
+    {
+      "key": "tag_25",
+      "value": "value_25"
+    },
+    {
+      "key": "tag_26",
+      "value": "value_26"
+    },
+    {
+      "key": "tag_27",
+      "value": "value_27"
+    },
+    {
+      "key": "tag_28",
+      "value": "value_28"
+    },
+    {
+      "key": "tag_29",
+      "value": "value_29"
+    },
+    {
+      "key": "tag_30",
+      "value": "value_30"
+    },
+    {
+      "key": "tag_31",
+      "value": "value_31"
+    },
+    {
+      "key": "tag_32",
+      "value": "value_32"
+    },
+    {
+      "key": "tag_33",
+      "value": "value_33"
+    },
+    {
+      "key": "tag_34",
+      "value": "value_34"
+    },
+    {
+      "key": "tag_35",
+      "value": "value_35"
+    },
+    {
+      "key": "tag_36",
+      "value": "value_36"
+    },
+    {
+      "key": "tag_37",
+      "value": "value_37"
+    },
+    {
+      "key": "tag_38",
+      "value": "value_38"
+    },
+    {
+      "key": "tag_39",
+      "value": "value_39"
+    }
+  ],
+  "entries": [
+    {
+      "type": "exception",
+      "data": {
+        "values": [
+          {
+            "type": "TypeError",
+            "value": "Cannot read properties of undefined (reading 'total')",
+            "module": null,
+            "threadId": null,
+            "mechanism": {
+              "type": "onunhandledrejection",
+              "handled": false,
+              "synthetic": false,
+              "data": {
+                "url": "https://api.example.com/pay?api_key=SEKRET"
+              }
+            },
+            "stacktrace": {
+              "frames": [
+                {
+                  "filename": "node_modules/express/lib/router/0.js",
+                  "absPath": "/build/agent/workspace/node_modules/express/lib/router/0.js",
+                  "function": "fn_100",
+                  "lineNo": 100,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "node_modules.express.lib.router.0",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_100",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/node_modules/express/lib/router/0.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "node_modules/express/lib/router/1.js",
+                  "absPath": "/build/agent/workspace/node_modules/express/lib/router/1.js",
+                  "function": "fn_101",
+                  "lineNo": 101,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "node_modules.express.lib.router.1",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_101",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/node_modules/express/lib/router/1.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "node_modules/express/lib/router/2.js",
+                  "absPath": "/build/agent/workspace/node_modules/express/lib/router/2.js",
+                  "function": "fn_102",
+                  "lineNo": 102,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "node_modules.express.lib.router.2",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_102",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/node_modules/express/lib/router/2.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "node_modules/express/lib/router/3.js",
+                  "absPath": "/build/agent/workspace/node_modules/express/lib/router/3.js",
+                  "function": "fn_103",
+                  "lineNo": 103,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "node_modules.express.lib.router.3",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_103",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/node_modules/express/lib/router/3.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "node_modules/express/lib/router/4.js",
+                  "absPath": "/build/agent/workspace/node_modules/express/lib/router/4.js",
+                  "function": "fn_104",
+                  "lineNo": 104,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "node_modules.express.lib.router.4",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_104",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/node_modules/express/lib/router/4.js",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/routes/checkout0.tsx",
+                  "absPath": "/build/agent/workspace/app/routes/checkout0.tsx",
+                  "function": "fn_200",
+                  "lineNo": 200,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.routes.checkout0",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_200",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/routes/checkout0.tsx",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/routes/checkout1.tsx",
+                  "absPath": "/build/agent/workspace/app/routes/checkout1.tsx",
+                  "function": "fn_201",
+                  "lineNo": 201,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.routes.checkout1",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_201",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/routes/checkout1.tsx",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null,
+                  "vars": {
+                    "token": "SEKRET",
+                    "orderId": "o-1"
+                  }
+                },
+                {
+                  "filename": "app/routes/checkout2.tsx",
+                  "absPath": "/build/agent/workspace/app/routes/checkout2.tsx",
+                  "function": "fn_202",
+                  "lineNo": 202,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.routes.checkout2",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_202",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/routes/checkout2.tsx",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                }
+              ],
+              "framesOmitted": null
+            }
+          }
+        ],
+        "hasSystemFrames": true,
+        "excOmitted": null
+      }
+    },
+    {
+      "type": "request",
+      "data": {
+        "method": "POST",
+        "url": "https://app.example.com/checkout?token=SEKRET&x=1",
+        "query": [
+          [
+            "token",
+            "SEKRET"
+          ],
+          [
+            "x",
+            "1"
+          ]
+        ],
+        "headers": [
+          [
+            "Authorization",
+            "Bearer SEKRET"
+          ],
+          [
+            "Content-Type",
+            "application/json"
+          ]
+        ],
+        "cookies": [
+          [
+            "session",
+            "SEKRET"
+          ]
+        ],
+        "env": {
+          "SERVER_NAME": "web-1",
+          "SECRET_KEY": "SEKRET"
+        },
+        "data": {
+          "password": "SEKRET",
+          "amount": 100
+        },
+        "inferredContentType": "application/json",
+        "fragment": null
+      }
+    },
+    {
+      "type": "spans",
+      "data": [
+        {
+          "span_id": "1",
+          "op": "db"
+        }
+      ]
+    }
+  ],
+  "contexts": {
+    "runtime": {
+      "name": "node",
+      "version": "22.19.0",
+      "type": "runtime",
+      "build": "x"
+    },
+    "os": {
+      "name": "Linux",
+      "version": "6.1",
+      "type": "os",
+      "kernelVersion": "6.1.0"
+    },
+    "trace": {
+      "trace_id": "tttttttttttttttttttttttttttttttt",
+      "span_id": "ssssssssssssssss",
+      "op": "http.server",
+      "type": "trace",
+      "status": "ok"
+    },
+    "state": {
+      "state": {
+        "cart": {
+          "secret": "SEKRET",
+          "items": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49
+          ]
+        }
+      },
+      "type": "state"
+    },
+    "app": {
+      "app_start_time": "2026-08-26T09:00:00Z",
+      "type": "app"
+    },
+    "custom_thing": {
+      "foo": "bar",
+      "type": "default"
+    }
+  },
+  "packages": {
+    "pkg-0": "1.0.0",
+    "pkg-1": "1.0.1",
+    "pkg-2": "1.0.2",
+    "pkg-3": "1.0.3",
+    "pkg-4": "1.0.4",
+    "pkg-5": "1.0.5",
+    "pkg-6": "1.0.6",
+    "pkg-7": "1.0.7",
+    "pkg-8": "1.0.8",
+    "pkg-9": "1.0.9",
+    "pkg-10": "1.0.10",
+    "pkg-11": "1.0.11",
+    "pkg-12": "1.0.12",
+    "pkg-13": "1.0.13",
+    "pkg-14": "1.0.14",
+    "pkg-15": "1.0.15",
+    "pkg-16": "1.0.16",
+    "pkg-17": "1.0.17",
+    "pkg-18": "1.0.18",
+    "pkg-19": "1.0.19",
+    "pkg-20": "1.0.20",
+    "pkg-21": "1.0.21",
+    "pkg-22": "1.0.22",
+    "pkg-23": "1.0.23",
+    "pkg-24": "1.0.24",
+    "pkg-25": "1.0.25",
+    "pkg-26": "1.0.26",
+    "pkg-27": "1.0.27",
+    "pkg-28": "1.0.28",
+    "pkg-29": "1.0.29",
+    "pkg-30": "1.0.30",
+    "pkg-31": "1.0.31",
+    "pkg-32": "1.0.32",
+    "pkg-33": "1.0.33",
+    "pkg-34": "1.0.34",
+    "pkg-35": "1.0.35",
+    "pkg-36": "1.0.36",
+    "pkg-37": "1.0.37",
+    "pkg-38": "1.0.38",
+    "pkg-39": "1.0.39",
+    "pkg-40": "1.0.40",
+    "pkg-41": "1.0.41",
+    "pkg-42": "1.0.42",
+    "pkg-43": "1.0.43",
+    "pkg-44": "1.0.44",
+    "pkg-45": "1.0.45",
+    "pkg-46": "1.0.46",
+    "pkg-47": "1.0.47",
+    "pkg-48": "1.0.48",
+    "pkg-49": "1.0.49",
+    "pkg-50": "1.0.50",
+    "pkg-51": "1.0.51",
+    "pkg-52": "1.0.52",
+    "pkg-53": "1.0.53",
+    "pkg-54": "1.0.54",
+    "pkg-55": "1.0.55",
+    "pkg-56": "1.0.56",
+    "pkg-57": "1.0.57",
+    "pkg-58": "1.0.58",
+    "pkg-59": "1.0.59",
+    "pkg-60": "1.0.60",
+    "pkg-61": "1.0.61",
+    "pkg-62": "1.0.62",
+    "pkg-63": "1.0.63",
+    "pkg-64": "1.0.64",
+    "pkg-65": "1.0.65",
+    "pkg-66": "1.0.66",
+    "pkg-67": "1.0.67",
+    "pkg-68": "1.0.68",
+    "pkg-69": "1.0.69",
+    "pkg-70": "1.0.70",
+    "pkg-71": "1.0.71",
+    "pkg-72": "1.0.72",
+    "pkg-73": "1.0.73",
+    "pkg-74": "1.0.74",
+    "pkg-75": "1.0.75",
+    "pkg-76": "1.0.76",
+    "pkg-77": "1.0.77",
+    "pkg-78": "1.0.78",
+    "pkg-79": "1.0.79"
+  },
+  "sdk": {
+    "name": "sentry.javascript.node",
+    "version": "8.30.0",
+    "packages": [
+      {
+        "name": "npm:@sentry/node"
+      }
+    ]
+  },
+  "user": {
+    "id": "42",
+    "email": "user@example.com",
+    "ip_address": "203.0.113.9",
+    "username": "ada",
+    "name": "Ada"
+  },
+  "_meta": {
+    "entries": {
+      "0": {
+        "value": null
+      }
+    }
+  },
+  "errors": [
+    {
+      "type": "js_no_source",
+      "message": "Source code was not found"
+    },
+    {
+      "type": "past_timestamp",
+      "message": "Discarded"
+    }
+  ]
+}

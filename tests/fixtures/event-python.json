@@ -1,0 +1,910 @@
+{
+  "id": "e2",
+  "eventID": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "groupID": "5002",
+  "projectID": "12",
+  "title": "ValueError",
+  "culprit": "app/services/sync.py in run",
+  "platform": "python",
+  "dateCreated": "2026-08-26T11:00:00.000Z",
+  "tags": [
+    {
+      "key": "environment",
+      "value": "staging"
+    }
+  ],
+  "entries": [
+    {
+      "type": "exception",
+      "data": {
+        "values": [
+          {
+            "type": "ValueError",
+            "value": "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+            "mechanism": {
+              "type": "generic",
+              "handled": true,
+              "synthetic": false
+            },
+            "stacktrace": {
+              "frames": [
+                {
+                  "filename": "site-packages/django/mod0.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod0.py",
+                  "function": "fn_300",
+                  "lineNo": 300,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod0",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_300",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod0.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod1.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod1.py",
+                  "function": "fn_301",
+                  "lineNo": 301,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod1",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_301",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod1.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod2.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod2.py",
+                  "function": "fn_302",
+                  "lineNo": 302,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod2",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_302",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod2.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod3.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod3.py",
+                  "function": "fn_303",
+                  "lineNo": 303,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod3",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_303",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod3.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod4.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod4.py",
+                  "function": "fn_304",
+                  "lineNo": 304,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod4",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_304",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod4.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod5.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod5.py",
+                  "function": "fn_305",
+                  "lineNo": 305,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod5",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_305",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod5.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod6.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod6.py",
+                  "function": "fn_306",
+                  "lineNo": 306,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod6",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_306",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod6.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod7.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod7.py",
+                  "function": "fn_307",
+                  "lineNo": 307,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod7",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_307",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod7.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod8.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod8.py",
+                  "function": "fn_308",
+                  "lineNo": 308,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod8",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_308",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod8.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod9.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod9.py",
+                  "function": "fn_309",
+                  "lineNo": 309,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod9",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_309",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod9.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/services/mod10.py",
+                  "absPath": "/build/agent/workspace/app/services/mod10.py",
+                  "function": "fn_310",
+                  "lineNo": 310,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.services.mod10",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_310",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/services/mod10.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null,
+                  "context": [
+                    [
+                      305,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 305"
+                    ],
+                    [
+                      306,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 306"
+                    ],
+                    [
+                      307,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 307"
+                    ],
+                    [
+                      308,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 308"
+                    ],
+                    [
+                      309,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 309"
+                    ],
+                    [
+                      310,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 310"
+                    ],
+                    [
+                      311,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 311"
+                    ],
+                    [
+                      312,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 312"
+                    ],
+                    [
+                      313,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 313"
+                    ],
+                    [
+                      314,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 314"
+                    ],
+                    [
+                      315,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 315"
+                    ]
+                  ]
+                },
+                {
+                  "filename": "site-packages/django/mod11.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod11.py",
+                  "function": "fn_311",
+                  "lineNo": 311,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod11",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_311",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod11.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod12.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod12.py",
+                  "function": "fn_312",
+                  "lineNo": 312,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod12",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_312",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod12.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod13.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod13.py",
+                  "function": "fn_313",
+                  "lineNo": 313,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod13",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_313",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod13.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod14.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod14.py",
+                  "function": "fn_314",
+                  "lineNo": 314,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod14",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_314",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod14.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod15.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod15.py",
+                  "function": "fn_315",
+                  "lineNo": 315,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod15",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_315",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod15.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod16.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod16.py",
+                  "function": "fn_316",
+                  "lineNo": 316,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod16",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_316",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod16.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/services/mod17.py",
+                  "absPath": "/build/agent/workspace/app/services/mod17.py",
+                  "function": "fn_317",
+                  "lineNo": null,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.services.mod17",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_317",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/services/mod17.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null,
+                  "context": [
+                    [
+                      400,
+                      "line-400"
+                    ],
+                    [
+                      401,
+                      "line-401"
+                    ],
+                    [
+                      402,
+                      "line-402"
+                    ],
+                    [
+                      403,
+                      "line-403"
+                    ],
+                    [
+                      404,
+                      "line-404"
+                    ],
+                    [
+                      405,
+                      "line-405"
+                    ],
+                    [
+                      406,
+                      "line-406"
+                    ],
+                    [
+                      407,
+                      "line-407"
+                    ],
+                    [
+                      408,
+                      "line-408"
+                    ],
+                    [
+                      409,
+                      "line-409"
+                    ],
+                    [
+                      410,
+                      "line-410"
+                    ],
+                    [
+                      411,
+                      "line-411"
+                    ],
+                    [
+                      412,
+                      "line-412"
+                    ],
+                    [
+                      413,
+                      "line-413"
+                    ],
+                    [
+                      414,
+                      "line-414"
+                    ]
+                  ]
+                },
+                {
+                  "filename": "site-packages/django/mod18.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod18.py",
+                  "function": "fn_318",
+                  "lineNo": 318,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod18",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_318",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod18.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod19.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod19.py",
+                  "function": "fn_319",
+                  "lineNo": 319,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod19",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_319",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod19.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod20.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod20.py",
+                  "function": "fn_320",
+                  "lineNo": 320,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod20",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_320",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod20.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod21.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod21.py",
+                  "function": "fn_321",
+                  "lineNo": 321,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod21",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_321",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod21.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod22.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod22.py",
+                  "function": "fn_322",
+                  "lineNo": 322,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod22",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_322",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod22.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod23.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod23.py",
+                  "function": "fn_323",
+                  "lineNo": 323,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod23",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_323",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod23.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/services/mod24.py",
+                  "absPath": "/build/agent/workspace/app/services/mod24.py",
+                  "function": "fn_324",
+                  "lineNo": 324,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.services.mod24",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_324",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/services/mod24.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null,
+                  "context": [
+                    [
+                      319,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 319"
+                    ],
+                    [
+                      320,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 320"
+                    ],
+                    [
+                      321,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 321"
+                    ],
+                    [
+                      322,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 322"
+                    ],
+                    [
+                      323,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 323"
+                    ],
+                    [
+                      324,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 324"
+                    ],
+                    [
+                      325,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 325"
+                    ],
+                    [
+                      326,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 326"
+                    ],
+                    [
+                      327,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 327"
+                    ],
+                    [
+                      328,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 328"
+                    ],
+                    [
+                      329,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 329"
+                    ]
+                  ]
+                },
+                {
+                  "filename": "site-packages/django/mod25.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod25.py",
+                  "function": "fn_325",
+                  "lineNo": 325,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod25",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_325",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod25.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod26.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod26.py",
+                  "function": "fn_326",
+                  "lineNo": 326,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod26",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_326",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod26.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod27.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod27.py",
+                  "function": "fn_327",
+                  "lineNo": 327,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod27",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_327",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod27.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "site-packages/django/mod28.py",
+                  "absPath": "/build/agent/workspace/site-packages/django/mod28.py",
+                  "function": "fn_328",
+                  "lineNo": 328,
+                  "colNo": 7,
+                  "inApp": false,
+                  "module": "site-packages.django.mod28",
+                  "package": "node_modules",
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_328",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/site-packages/django/mod28.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null
+                },
+                {
+                  "filename": "app/services/mod29.py",
+                  "absPath": "/build/agent/workspace/app/services/mod29.py",
+                  "function": "fn_329",
+                  "lineNo": 329,
+                  "colNo": 7,
+                  "inApp": true,
+                  "module": "app.services.mod29",
+                  "package": null,
+                  "instructionAddr": "0x1234",
+                  "symbolAddr": "0x1200",
+                  "trust": "scan",
+                  "platform": "node",
+                  "rawFunction": "raw_329",
+                  "minGroupingLevel": 0,
+                  "origAbsPath": "/orig/app/services/mod29.py",
+                  "data": {
+                    "orig_in_app": 1
+                  },
+                  "addrMode": "abs",
+                  "errors": null,
+                  "context": [
+                    [
+                      324,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 324"
+                    ],
+                    [
+                      325,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 325"
+                    ],
+                    [
+                      326,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 326"
+                    ],
+                    [
+                      327,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 327"
+                    ],
+                    [
+                      328,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 328"
+                    ],
+                    [
+                      329,
+                      "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+                    ],
+                    [
+                      330,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 330"
+                    ],
+                    [
+                      331,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 331"
+                    ],
+                    [
+                      332,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 332"
+                    ],
+                    [
+                      333,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 333"
+                    ],
+                    [
+                      334,
+                      "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss line 334"
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "contexts": {
+    "runtime": {
+      "name": "CPython",
+      "version": "3.12.4",
+      "type": "runtime"
+    }
+  },
+  "sdk": {
+    "name": "sentry.python",
+    "version": "2.14.0"
+  },
+  "errors": []
+}
