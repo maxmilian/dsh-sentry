@@ -9,7 +9,6 @@ import Schema from '@deepseek-ai/schemastery'
 import { SentryClient } from './client.js'
 import type { SentryConfig } from './config.js'
 import {
-  DEFAULT_BASE_URL,
   DEFAULT_MAX_RESPONSE_BYTES,
   DEFAULT_REQUEST_TIMEOUT_MS,
   LOCALES,
@@ -56,11 +55,11 @@ export type Config = SentryConfig
 
 /** Schemastery configuration exposed by the plugin. */
 export const Config: Schema<Config> = Schema.object({
-  baseUrl: Schema.string().default(DEFAULT_BASE_URL),
+  baseUrl: Schema.string(),
   token: Schema.string().role('secret'),
   org: Schema.string(),
   locale: Schema.union(LOCALES.map((locale) => Schema.const(locale))).default('en'),
-  includeFrameVars: Schema.boolean().default(false),
+  includeFrameVars: Schema.boolean(),
   requestTimeoutMs: Schema.number()
     .step(1)
     .min(1)

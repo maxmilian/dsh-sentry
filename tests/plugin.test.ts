@@ -2,9 +2,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import type { ToolDefinition } from '@deepseek-ai/dsh-tools'
 import { describe, expect, it } from 'vitest'
 
-import { apply, Config, inject, name } from '../src/index.js'
-
-const pluginIt = Object.hasOwn(globalThis, 'Bun') ? it.skip : it
+import { apply, Config, inject, name, resolveConfig } from '../src/index.js'
 
 const BASE = { token: 't', org: 'acme' } as const
 
@@ -24,7 +22,7 @@ describe('DSH plugin entry', () => {
     expect(Config).toBeDefined()
   })
 
-  pluginIt('exposes localized plugin configuration descriptions', () => {
+  it('exposes localized plugin configuration descriptions', () => {
     expect(Config.meta.description).toMatchObject({
       en: 'Read-only Sentry integration settings.',
       'zh-TW': 'Sentry 唯讀整合設定。',
@@ -34,7 +32,7 @@ describe('DSH plugin entry', () => {
     expect(Config.dict?.token?.meta.role).toBe('secret')
   })
 
-  pluginIt('registers five tools without presentCall', () => {
+  it('registers five tools without presentCall', () => {
     const tools = registerWith({ ...BASE })
 
     expect(tools.size).toBe(5)
@@ -44,7 +42,7 @@ describe('DSH plugin entry', () => {
     }
   })
 
-  pluginIt('keeps tool names in English while switching descriptions by locale', () => {
+  it('keeps tool names in English while switching descriptions by locale', () => {
     const english = registerWith({ ...BASE })
     const traditional = registerWith({ ...BASE, locale: 'zh-TW' })
     const japanese = registerWith({ ...BASE, locale: 'ja' })
@@ -59,11 +57,22 @@ describe('DSH plugin entry', () => {
     expect(japanese.get(key)?.description).not.toBe(traditional.get(key)?.description)
   })
 
-  pluginIt('rejects an unusable configuration at apply time', () => {
+  it('rejects an unusable configuration at apply time', () => {
     expect(() => registerWith({ org: 'acme' })).toThrow(/token/)
   })
 
-  pluginIt('renders output as a single text block', () => {
+  it('preserves environment fallbacks after Schemastery parses config defaults', () => {
+    const parsed = Config({ token: 'cfg-token', org: 'cfg-org' })
+    const resolved = resolveConfig(parsed, {
+      SENTRY_URL: 'https://self-hosted.example/sentry/',
+      SENTRY_INCLUDE_FRAME_VARS: 'true',
+    })
+
+    expect(resolved.baseUrl).toBe('https://self-hosted.example/sentry/')
+    expect(resolved.includeFrameVars).toBe(true)
+  })
+
+  it('renders output as a single text block', () => {
     const tool = registerWith({ ...BASE }).get('sentry_get_issue')
     const rendered = tool?.output?.render?.({}, { data: { id: '1' }, meta: {} } as never)
 

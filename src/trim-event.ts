@@ -14,7 +14,8 @@ const MAX_BREADCRUMBS = 20
 const MAX_EXCEPTION_VALUES = 2
 const TAIL_FRAMES = 2
 
-const SECRET_TAG_PATTERN = /(token|secret|password|api[_-]?key|auth|cookie|session|credential)/i
+const SECRET_TAG_PATTERN =
+  /(token|secret|pass(?:word|wd|phrase)|pwd|api[_-]?key|auth|cookie|session|credential|private[_-]?key|access[_-]?key|ssh[_-]?key|signing[_-]?key|jwt|dsn|signature|e[-_]?mail|ip[_-]?address|username|(?:^|[_.-])ip(?:$|[_.-]))/i
 const CONTEXT_WHITELIST = ['runtime', 'os', 'browser', 'device', 'trace'] as const
 const TRACE_FIELDS = ['trace_id', 'span_id', 'op'] as const
 const CONTEXT_FIELDS = ['type', 'name', 'version'] as const
@@ -45,6 +46,7 @@ export interface TrimPass {
   readonly maxFrames: number
   readonly includeBreadcrumbs: boolean
   readonly includeSourceContext: boolean
+  readonly includeFrameVars: boolean
   readonly degraded?: TrimmedMeta['degraded']
 }
 
@@ -176,7 +178,7 @@ function trimStacktrace(
   counters.omittedFrames += frames.length - kept.length
   const contextIndexes = pickContextFrames(kept, pass.includeSourceContext)
   return {
-    frames: kept.map((frame, index) => trimFrame(frame, options, contextIndexes.has(index))),
+    frames: kept.map((frame, index) => trimFrame(frame, options, pass, contextIndexes.has(index))),
   }
 }
 
@@ -215,11 +217,16 @@ function pickContextFrames(frames: JsonObject[], enabled: boolean): ReadonlySet<
   return indexes
 }
 
-function trimFrame(frame: JsonObject, options: TrimEventOptions, withContext: boolean): JsonValue {
+function trimFrame(
+  frame: JsonObject,
+  options: TrimEventOptions,
+  pass: TrimPass,
+  withContext: boolean,
+): JsonValue {
   const trimmed: JsonObject = {}
   for (const field of FRAME_FIELDS) putIfPresent(trimmed, field, frame[field])
   if (withContext) putIfPresent(trimmed, 'context', selectContext(frame))
-  if (options.includeFrameVars) putIfPresent(trimmed, 'vars', frame.vars)
+  if (options.includeFrameVars && pass.includeFrameVars) putIfPresent(trimmed, 'vars', frame.vars)
   return trimmed
 }
 

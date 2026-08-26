@@ -137,6 +137,41 @@ describe('registerSentryTools', () => {
     expect(getEvent).toHaveBeenCalledWith('web-app', 'a'.repeat(32), expect.any(AbortSignal))
   })
 
+  it.each([-1, 0, 101])('rejects max_frames outside 1-100: %i', async (maxFrames) => {
+    const getLatestEvent = vi.fn().mockResolvedValue({
+      data: { entries: [], tags: [], contexts: {} },
+      meta: {},
+    })
+    const tool = toolOf(register({ getLatestEvent }), 'sentry_get_latest_event')
+
+    await expect(run(tool, { issue: '1', max_frames: maxFrames })).rejects.toMatchObject({
+      code: 'INVALID_INPUT',
+    })
+    expect(getLatestEvent).not.toHaveBeenCalled()
+  })
+
+  it('enforces the byte budget on the final data-plus-meta envelope', async () => {
+    const filename = 'x'.repeat(199_893)
+    const getLatestEvent = vi.fn().mockResolvedValue({
+      data: {
+        entries: [
+          {
+            type: 'exception',
+            data: { values: [{ stacktrace: { frames: [{ filename, inApp: true }] } }] },
+          },
+        ],
+        tags: [],
+        contexts: {},
+      },
+      meta: {},
+    })
+    const tool = toolOf(register({ getLatestEvent }), 'sentry_get_latest_event')
+
+    await expect(run(tool, { issue: '1' })).rejects.toMatchObject({
+      code: 'RESPONSE_TOO_LARGE',
+    })
+  })
+
   it('lets trimming errors escape', async () => {
     const searchIssues = vi.fn().mockResolvedValue({ data: { notAnArray: true }, meta: {} })
     const tools = register({ searchIssues })

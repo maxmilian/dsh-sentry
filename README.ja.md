@@ -83,14 +83,15 @@ export SENTRY_URL='https://sentry.example.com'
 - スタックフレームのローカル変数（`includeFrameVars` が有効な場合を除く）。
 - `mechanism.data`、`contexts.state`、`packages`、`modules`、`_meta`。
 - `user.email`、`user.ip_address`、`user.username`。残るのは `user.id` のみです。
-- キーが秘密情報らしいタグ（`token`、`secret`、`password`、`api_key`、`auth`、`cookie`、`session`、
-  `credential`）と、`sentry:` 接頭辞の内部タグすべて。
+- キーが秘密情報または直接的な PII らしいタグ（`token`、`secret`、`password`、`passwd`、`api_key`、
+  `auth`、`cookie`、`session`、`credential`、private/access key、JWT、DSN、signature、email、IP address、
+  username）と、`sentry:` 接頭辞の内部タグすべて。
 - `absPath` のような、ビルドパスを漏らすフレームフィールド。
 
 削除ではなく縮小されるもの:
 
-- **フレーム。** フレームは外側から内側の順に並びます。`max_frames` を超える場合、すべての in-app
-  フレームと最も内側の 2 フレームを残し、続けて末尾側から補充し、元の順序を保ちます。
+- **フレーム。** フレームは外側から内側の順に並びます。`max_frames` を超える場合、in-app フレームを
+  優先し、最も内側の 2 フレームを必ず含め、空きがあれば末尾側から補充します。上限を超えず、元の順序を保ちます。
 - **ソースコード断片。** 最も内側の in-app フレーム 3 つにのみ、各 11 行まで、1 行 200 文字までで残します。
 - **連鎖した例外。** `exception.values` は最も内側の 2 件まで。`max_frames` は各スタックトレースへ
   個別に適用されます。
@@ -98,7 +99,8 @@ export SENTRY_URL='https://sentry.example.com'
 - **文字列。** 例外の value は 2000 文字、title・message・culprit は 500 文字が上限です。
 
 削減後もツール結果の上限 200KB を超える場合、本プラグインは決まった順序で段階的に切り詰めます。
-まずソースコード断片、次に breadcrumbs、最後にフレームを 10 件まで減らし、最後に適用した段階を
+まずソースコード断片、次に breadcrumbs、その次にフレームを最大 10 件まで減らします。呼び出し側の上限がより低い場合、それを引き上げることはありません。管理者が有効にした
+frame vars がなお大きすぎる場合は、最後のフォールバックとして削除します。最後に適用した段階を
 `meta.trimmed.degraded` で報告します。`omittedFrames` などのカウンタは常に「元の総数から実際に
 受け取った数を引いた値」であり、段階ごとの累計ではありません。
 
@@ -137,7 +139,8 @@ export SENTRY_URL='https://sentry.example.com'
 
 ## 開発
 
-本プロジェクトは Bun のみを使用します:
+本プロジェクトは Bun をパッケージマネージャーおよび script runner として使用します。公開後の
+プラグイン runtime は上記の Node.js バージョンを対象とします:
 
 ```sh
 bun install --frozen-lockfile

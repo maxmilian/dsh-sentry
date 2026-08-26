@@ -10,6 +10,13 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-26-dsh-sentry-design.md` — read it alongside this plan. Section references below (§3.2, §4.9, …) point into that spec.
 
+> **Post-review amendments (2026-08-26):** The final implementation additionally validates
+> `max_frames` in product code because dsh-tools does not enforce numeric bounds; measures the exact
+> `{ data, meta }` envelope against the byte budget; filters credential/PII tag and HTTP-400 detail
+> naming variants; preserves `SENTRY_URL` and `SENTRY_INCLUDE_FRAME_VARS` after Schemastery parsing;
+> and adds a final `frame_vars` degradation rung when administrator-enabled vars prevent a response
+> from fitting. These amendments supersede older code snippets and “three-level ladder” wording below.
+
 **Skeleton source:** `~/side/ankey/dsh-sonarqube` is the reference implementation of this exact plugin shape (six files, ~950 lines, read-only, same auth model). **Copy its files and edit them; do not reinvent.** `config.ts`, `errors.ts`, and `locales.ts` are the highest-reuse blocks. `~/side/ankey/dsh-forge/src/index.ts` is the reference for passing a locale into tool registration.
 
 ## Global Constraints

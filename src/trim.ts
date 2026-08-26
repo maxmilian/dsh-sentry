@@ -7,6 +7,7 @@ import {
   isJsonObject,
   MAX_TOOL_RESULT_BYTES,
   measureBytes,
+  measureToolResultBytes,
   putIfPresent,
   TITLE_CHARS,
   tooLargeAfterTrimming,
@@ -15,7 +16,7 @@ import {
 import type { JsonObject, JsonValue, TrimResult } from './types.js'
 
 export type { TrimEventOptions }
-export { MAX_TOOL_RESULT_BYTES, measureBytes, TITLE_CHARS, truncate }
+export { MAX_TOOL_RESULT_BYTES, measureBytes, measureToolResultBytes, TITLE_CHARS, truncate }
 
 const PROJECT_FIELDS = [
   'id',
@@ -157,11 +158,12 @@ export function trimEvent(raw: JsonValue, options: TrimEventOptions): TrimResult
   const budget = options.maxBytes ?? MAX_TOOL_RESULT_BYTES
   for (const pass of degradationLadder(options)) {
     const built = buildEvent(raw, options, pass)
-    if (measureBytes(built.data) <= budget) {
+    const meta: JsonObject = built.trimmed ? { trimmed: built.trimmed as JsonObject } : {}
+    if (measureToolResultBytes(built.data, meta) <= budget) {
       return built.trimmed ? { data: built.data, trimmed: built.trimmed } : { data: built.data }
     }
   }
-  throw tooLargeAfterTrimming('frames')
+  throw tooLargeAfterTrimming(options.includeFrameVars ? 'frame_vars' : 'frames')
 }
 
 /**
@@ -169,29 +171,44 @@ export function trimEvent(raw: JsonValue, options: TrimEventOptions): TrimResult
  * omitted counters are always "original total minus final kept" with no accumulation.
  */
 function degradationLadder(options: TrimEventOptions): readonly TrimPass[] {
-  return [
+  const degradedMaxFrames = Math.min(options.maxFrames, DEGRADED_MAX_FRAMES)
+  const passes: TrimPass[] = [
     {
       maxFrames: options.maxFrames,
       includeBreadcrumbs: options.includeBreadcrumbs,
       includeSourceContext: true,
+      includeFrameVars: options.includeFrameVars,
     },
     {
       maxFrames: options.maxFrames,
       includeBreadcrumbs: options.includeBreadcrumbs,
       includeSourceContext: false,
+      includeFrameVars: options.includeFrameVars,
       degraded: 'source_context',
     },
     {
       maxFrames: options.maxFrames,
       includeBreadcrumbs: false,
       includeSourceContext: false,
+      includeFrameVars: options.includeFrameVars,
       degraded: 'breadcrumbs',
     },
     {
-      maxFrames: DEGRADED_MAX_FRAMES,
+      maxFrames: degradedMaxFrames,
       includeBreadcrumbs: false,
       includeSourceContext: false,
+      includeFrameVars: options.includeFrameVars,
       degraded: 'frames',
     },
   ]
+  if (options.includeFrameVars) {
+    passes.push({
+      maxFrames: degradedMaxFrames,
+      includeBreadcrumbs: false,
+      includeSourceContext: false,
+      includeFrameVars: false,
+      degraded: 'frame_vars',
+    })
+  }
+  return passes
 }

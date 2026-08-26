@@ -3,13 +3,17 @@ import { defineTool } from '@deepseek-ai/dsh-tools'
 
 import type { SentryClient } from './client.js'
 import type { Locale } from './config.js'
+import { SentryApiError } from './errors.js'
 import { TOOL_I18N } from './locales.js'
+import type { TrimEventOptions } from './trim.js'
 import { trimEvent, trimIssue, trimIssueList, trimProjectList } from './trim.js'
+import { assertToolResultWithinBudget } from './trim-shared.js'
 import type { JsonObject, JsonValue, TrimmedMeta } from './types.js'
 
 const STATS_PERIODS = ['24h', '14d'] as const
 const SORT_ORDERS = ['date', 'new', 'freq', 'user', 'recommended'] as const
 const DEFAULT_MAX_FRAMES = 20
+const MAX_FRAMES = 100
 
 /** Shared output contract: `data` is always an object, every `meta` field is optional. */
 export const OUTPUT_SCHEMA = {
@@ -58,7 +62,7 @@ function registerListProjects(ctx: Context, client: SentryClient, text: ToolText
       execute: async (_args, exec) => {
         const result = await client.listProjects(exec.signal)
         const trimmed = trimProjectList(result.data, result.meta.hasMore)
-        return { data: trimmed.data, meta: pickMeta({ truncated: trimmed.truncated }) }
+        return toolResult(trimmed.data, pickMeta({ truncated: trimmed.truncated }))
       },
       isConcurrencySafe: () => true,
     }),
@@ -95,13 +99,13 @@ function registerSearchIssues(ctx: Context, client: SentryClient, text: ToolText
           exec.signal,
         )
         const trimmed = trimIssueList(result.data)
-        return {
-          data: trimmed.data,
-          meta: pickMeta({
+        return toolResult(
+          trimmed.data,
+          pickMeta({
             nextCursor: result.meta.nextCursor,
             matchingCount: result.meta.matchingCount,
           }),
-        }
+        )
       },
       isConcurrencySafe: () => true,
     }),
@@ -119,7 +123,7 @@ function registerGetIssue(ctx: Context, client: SentryClient, text: ToolText): v
       output: { schema: OUTPUT_SCHEMA, render: renderJson },
       execute: async (args, exec) => {
         const result = await client.getIssue(args.issue, exec.signal)
-        return { data: trimIssue(result.data).data, meta: pickMeta({}) }
+        return toolResult(trimIssue(result.data).data, pickMeta({}))
       },
       isConcurrencySafe: () => true,
     }),
@@ -144,8 +148,9 @@ function registerGetLatestEvent(
       },
       output: { schema: OUTPUT_SCHEMA, render: renderJson },
       execute: async (args, exec) => {
+        const options = resolveEventOptions(args, includeFrameVars)
         const result = await client.getLatestEvent(args.issue, exec.signal)
-        return renderEvent(result.data, args, includeFrameVars)
+        return renderEvent(result.data, options)
       },
       isConcurrencySafe: () => true,
     }),
@@ -171,8 +176,9 @@ function registerGetEvent(
       },
       output: { schema: OUTPUT_SCHEMA, render: renderJson },
       execute: async (args, exec) => {
+        const options = resolveEventOptions(args, includeFrameVars)
         const result = await client.getEvent(args.project_slug, args.event_id, exec.signal)
-        return renderEvent(result.data, args, includeFrameVars)
+        return renderEvent(result.data, options)
       },
       isConcurrencySafe: () => true,
     }),
@@ -186,15 +192,29 @@ interface EventArgs {
 
 function renderEvent(
   raw: JsonValue,
-  args: EventArgs,
-  includeFrameVars: boolean,
+  options: TrimEventOptions,
 ): { data: JsonObject; meta: JsonObject } {
-  const trimmed = trimEvent(raw, {
-    maxFrames: args.max_frames ?? DEFAULT_MAX_FRAMES,
+  const trimmed = trimEvent(raw, options)
+  return toolResult(trimmed.data, pickMeta({ trimmed: trimmed.trimmed }))
+}
+
+function resolveEventOptions(args: EventArgs, includeFrameVars: boolean): TrimEventOptions {
+  return {
+    maxFrames: resolveMaxFrames(args.max_frames),
     includeBreadcrumbs: args.include_breadcrumbs ?? true,
     includeFrameVars,
-  })
-  return { data: trimmed.data, meta: pickMeta({ trimmed: trimmed.trimmed }) }
+  }
+}
+
+function resolveMaxFrames(value: number | undefined): number {
+  if (value === undefined) return DEFAULT_MAX_FRAMES
+  if (!Number.isSafeInteger(value) || value < 1 || value > MAX_FRAMES) {
+    throw new SentryApiError(
+      `Invalid Sentry input: max_frames must be an integer between 1 and ${MAX_FRAMES}.`,
+      { code: 'INVALID_INPUT' },
+    )
+  }
+  return value
 }
 
 interface MetaCandidate {
@@ -212,6 +232,11 @@ function pickMeta(candidate: MetaCandidate): JsonObject {
   if (candidate.truncated !== undefined) meta.truncated = candidate.truncated
   if (candidate.trimmed !== undefined) meta.trimmed = candidate.trimmed as JsonObject
   return meta
+}
+
+function toolResult(data: JsonObject, meta: JsonObject): { data: JsonObject; meta: JsonObject } {
+  assertToolResultWithinBudget(data, meta)
+  return { data, meta }
 }
 
 function renderJson(_args: unknown, value: JsonValue) {

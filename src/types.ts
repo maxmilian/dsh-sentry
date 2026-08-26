@@ -30,7 +30,7 @@ export interface TrimmedMeta {
   readonly omittedTags?: number
   readonly eventProcessingErrors?: number
   readonly exceptionSource?: 'threads'
-  readonly degraded?: 'source_context' | 'breadcrumbs' | 'frames'
+  readonly degraded?: 'source_context' | 'breadcrumbs' | 'frames' | 'frame_vars'
 }
 
 /** Result of a pure trim pass. `data` is always an object. */

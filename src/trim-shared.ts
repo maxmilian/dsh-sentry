@@ -20,6 +20,11 @@ export function measureBytes(value: JsonObject): number {
   return Buffer.byteLength(JSON.stringify(value), 'utf8')
 }
 
+/** Serialized size of the exact data-plus-meta envelope returned by a tool. */
+export function measureToolResultBytes(data: JsonObject, meta: JsonObject): number {
+  return Buffer.byteLength(JSON.stringify({ data, meta }), 'utf8')
+}
+
 /** Creates the trimming variant of RESPONSE_TOO_LARGE. */
 export function tooLargeAfterTrimming(degraded?: string): SentryApiError {
   return new SentryApiError(
@@ -32,6 +37,12 @@ export function tooLargeAfterTrimming(degraded?: string): SentryApiError {
 export function assertWithinBudget(data: JsonObject, degraded?: string): void {
   if (measureBytes(data) <= MAX_TOOL_RESULT_BYTES) return
   throw tooLargeAfterTrimming(degraded)
+}
+
+/** Throws when the final tool envelope exceeds its hard serialized byte budget. */
+export function assertToolResultWithinBudget(data: JsonObject, meta: JsonObject): void {
+  if (measureToolResultBytes(data, meta) <= MAX_TOOL_RESULT_BYTES) return
+  throw tooLargeAfterTrimming()
 }
 
 /** Assigns a value only when it is neither undefined nor null, keeping payloads clean. */

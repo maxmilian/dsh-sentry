@@ -102,7 +102,7 @@ const ENGLISH_TOOLS = {
   },
   sentry_get_latest_event: {
     description:
-      'Read the latest event of a Sentry issue with a trimmed stacktrace. First-party frames are preserved, source context is limited to the innermost first-party frames, and local variables, request headers, request bodies, query strings, packages, and secret-looking tags are removed. Accepts a numeric issue id or a short id; a short id costs one extra request.',
+      'Read the latest event of a Sentry issue with a trimmed stacktrace. First-party frames are prioritized, source context is limited to the innermost first-party frames, and local variables, request headers, request bodies, query strings, packages, and secret-looking tags are removed. Local variables are retained only when an administrator enables includeFrameVars, and may still be removed as a final size fallback. Accepts a numeric issue id or a short id; a short id costs one extra request.',
     params: {
       issue: 'Numeric issue id or short id such as PROJ-ABC.',
       max_frames: 'Maximum stack frames kept per stacktrace, 1 to 100. Defaults to 20.',
@@ -147,7 +147,7 @@ const TRADITIONAL_CHINESE_TOOLS = {
   },
   sentry_get_latest_event: {
     description:
-      '讀取 Sentry issue 的最新 event，並裁剪 stacktrace。保留第一方 frame，原始碼片段只保留最內層的第一方 frame，並移除區域變數、request headers、request body、query string、套件清單與疑似機密的 tag。接受數字 issue id 或 short id；使用 short id 會多花一次請求。',
+      '讀取 Sentry issue 的最新 event，並裁剪 stacktrace。優先保留第一方 frame，原始碼片段只保留最內層的第一方 frame，並移除區域變數、request headers、request body、query string、套件清單與疑似機密的 tag。只有管理者開啟 includeFrameVars 時才會保留區域變數，且最終仍可能為符合大小上限而移除。接受數字 issue id 或 short id；使用 short id 會多花一次請求。',
     params: {
       issue: '數字 issue id，或 PROJ-ABC 這類 short id。',
       max_frames: '每個 stacktrace 保留的 frame 數上限，1 到 100。預設 20。',
@@ -192,7 +192,7 @@ const SIMPLIFIED_CHINESE_TOOLS = {
   },
   sentry_get_latest_event: {
     description:
-      '读取 Sentry issue 的最新 event，并裁剪 stacktrace。保留第一方 frame，源码片段只保留最内层的第一方 frame，并移除局部变量、request headers、request body、query string、依赖包清单与疑似机密的 tag。接受数字 issue id 或 short id；使用 short id 会多花一次请求。',
+      '读取 Sentry issue 的最新 event，并裁剪 stacktrace。优先保留第一方 frame，源码片段只保留最内层的第一方 frame，并移除局部变量、request headers、request body、query string、依赖包清单与疑似机密的 tag。只有管理员开启 includeFrameVars 时才会保留局部变量，且最终仍可能为满足大小上限而移除。接受数字 issue id 或 short id；使用 short id 会多花一次请求。',
     params: {
       issue: '数字 issue id，或 PROJ-ABC 这类 short id。',
       max_frames: '每个 stacktrace 保留的 frame 数上限，1 到 100。默认 20。',
@@ -237,7 +237,7 @@ const JAPANESE_TOOLS = {
   },
   sentry_get_latest_event: {
     description:
-      'Sentry issue の最新イベントをスタックトレースを削減して読み取ります。ファーストパーティのフレームは残し、ソースコード断片は最も内側のファーストパーティフレームに限定し、ローカル変数、リクエストヘッダ、リクエストボディ、クエリ文字列、パッケージ一覧、機密らしいタグは削除します。数値 issue id と short id のどちらも受け付けます。short id は追加のリクエストを 1 回要します。',
+      'Sentry issue の最新イベントをスタックトレースを削減して読み取ります。ファーストパーティのフレームを優先して残し、ソースコード断片は最も内側のファーストパーティフレームに限定し、ローカル変数、リクエストヘッダ、リクエストボディ、クエリ文字列、パッケージ一覧、機密らしいタグは削除します。ローカル変数は管理者が includeFrameVars を有効にした場合のみ保持され、最終的なサイズ調整で削除されることがあります。数値 issue id と short id のどちらも受け付けます。short id は追加のリクエストを 1 回要します。',
     params: {
       issue: '数値の issue id、または PROJ-ABC のような short id。',
       max_frames: 'スタックトレースごとに残すフレーム数の上限、1 から 100。既定値は 20 です。',

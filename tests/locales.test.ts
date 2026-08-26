@@ -46,6 +46,14 @@ describe('TOOL_I18N', () => {
       expect(new Set(texts).size, tool).toBe(LOCALES.length)
     }
   })
+
+  it('states that frame variables can be retained by administrator configuration', () => {
+    for (const locale of LOCALES) {
+      expect(TOOL_I18N[locale].sentry_get_latest_event.description).toMatch(
+        /includeFrameVars|管理者|管理员/,
+      )
+    }
+  })
 })
 
 describe('CONFIG_I18N', () => {

@@ -254,6 +254,30 @@ describe('trimEvent security stripping', () => {
     expect(result.trimmed?.omittedTags).toBeGreaterThan(0)
   })
 
+  it('drops credential and PII naming variants from custom tags', () => {
+    const riskyKeys = [
+      'passwd',
+      'passphrase',
+      'pwd',
+      'jwt',
+      'dsn',
+      'private_key',
+      'access_key_id',
+      'ssh_key',
+      'signing_key',
+      'user_email',
+      'user_ip',
+      'x-amz-signature',
+    ]
+    const adversarial = {
+      ...(eventNode as Record<string, unknown>),
+      tags: riskyKeys.map((key) => ({ key, value: `BAIT_${key}` })),
+    } as JsonValue
+    const serialized = JSON.stringify(trimEvent(adversarial, BASE).data)
+
+    for (const key of riskyKeys) expect(serialized).not.toContain(`BAIT_${key}`)
+  })
+
   it('lifts release, environment, and level to the top level', () => {
     const { event } = trimNode()
 
@@ -456,5 +480,56 @@ describe('trimEvent degradation ladder', () => {
     expect(error?.message).toBe(
       'Sentry event was too large to summarize even after trimming (degraded: frames).',
     )
+  })
+
+  it('drops opted-in frame vars as a final availability fallback', () => {
+    const event = {
+      entries: [
+        {
+          type: 'exception',
+          data: {
+            values: [
+              {
+                stacktrace: {
+                  frames: [
+                    { filename: 'app.js', inApp: true, vars: { payload: 'x'.repeat(250_000) } },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      ],
+      tags: [],
+      contexts: {},
+    } as JsonValue
+
+    const result = trimEvent(event, { ...BASE, includeFrameVars: true })
+
+    expect(result.trimmed?.degraded).toBe('frame_vars')
+    expect(JSON.stringify(result.data)).not.toContain('payload')
+  })
+
+  it('never raises a caller max_frames cap while degrading frame vars', () => {
+    const frames = Array.from({ length: 20 }, (_value, index) => ({
+      filename: `${index}-${'x'.repeat(30_000)}`,
+      inApp: true,
+      vars: { payload: 'v'.repeat(250_000) },
+    }))
+    const event = {
+      entries: [{ type: 'exception', data: { values: [{ stacktrace: { frames } }] } }],
+      tags: [],
+      contexts: {},
+    } as JsonValue
+
+    const result = trimEvent(event, {
+      ...BASE,
+      maxFrames: 1,
+      includeFrameVars: true,
+    })
+    const trimmed = result.data as unknown as TrimmedEvent
+
+    expect(result.trimmed?.degraded).toBe('frame_vars')
+    expect(framesOf(trimmed)).toHaveLength(1)
   })
 })

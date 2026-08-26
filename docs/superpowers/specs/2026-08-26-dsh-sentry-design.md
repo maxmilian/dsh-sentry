@@ -218,7 +218,7 @@ const OUTPUT_SCHEMA = {
 
 ### 3.4 `sentry_get_latest_event`
 
-- **description（en）**：`Read the latest event of a Sentry issue with a trimmed stacktrace. First-party frames are preserved, source context is limited to the innermost first-party frames, and local variables, request headers, request bodies, query strings, packages, and secret-looking tags are removed. Accepts a numeric issue id or a short id; a short id costs one extra request.`
+- **description（en）**：`Read the latest event of a Sentry issue with a trimmed stacktrace. First-party frames are prioritized, source context is limited to the innermost first-party frames, and local variables, request headers, request bodies, query strings, packages, and secret-looking tags are removed. Local variables are retained only when an administrator enables includeFrameVars, and may still be removed as a final size fallback. Accepts a numeric issue id or a short id; a short id costs one extra request.`
   （描述逐句對應 §4 的裁剪行為，registry 會比對。）
 - **參數**：
 
@@ -279,7 +279,7 @@ meta.trimmed = {
   omittedTags?: number,               // 因命中機密樣式或超出 30 筆而丟棄的 tag 數
   eventProcessingErrors?: number,     // 原 errors[].length
   exceptionSource?: "threads",
-  degraded?: "source_context" | "breadcrumbs" | "frames",
+  degraded?: "source_context" | "breadcrumbs" | "frames" | "frame_vars",
 }
 ```
 
@@ -328,7 +328,7 @@ Sentry 每個 frame 的 `context` 是 `[[lineNo, sourceText], …]`，通常前�
 
 1. 先提取 `release` / `environment` / `level` 成頂層欄位，並從 tags 陣列中移除，避免重複。
 2. 丟棄所有 `sentry:` 前綴的內部 tag。
-3. **機密樣式過濾**：tag `key` 命中 `/(token|secret|password|api[_-]?key|auth|cookie|session|credential)/i` 即**整筆丟棄**（連 key 名都不輸出）。自訂 tag 是 `api_key` / `session_id` / `auth_token` / `user_email` 的重災區，這條與 §4.7 的 `frame.vars` 同等重要。
+3. **機密與直接 PII 樣式過濾**：tag `key` 命中 credential（token、secret、password/passwd/passphrase/pwd、API/private/access/SSH/signing key、auth、cookie、session、credential、JWT、DSN、signature）或直接 PII（email、IP address、username）樣式即**整筆丟棄**（連 key 名都不輸出）。自訂 tag 是 `api_key` / `session_id` / `auth_token` / `user_email` 的重災區，這條與 §4.7 的 `frame.vars` 同等重要。實作 regex 以 `src/trim-event.ts` 的 `SECRET_TAG_PATTERN` 為唯一準據，避免 spec 複製一份容易再次漏同步的長 regex。
 4. 其餘 tags 依原順序保留至多 30 筆，`key` 與 `value` 依 §4.9 截斷。
 5. 因步驟 3、4 丟掉的筆數合計記入 `meta.trimmed.omittedTags`。
 
@@ -345,7 +345,7 @@ Sentry 每個 frame 的 `context` 是 `[[lineNo, sourceText], …]`，通常前�
 | `entries[request].headers` / `cookies` / `env` | 丟棄 | 幾乎必定含 `Authorization` / `Cookie` / session |
 | `entries[request].data` | 丟棄 | POST body，含密碼 / token 的常見位置 |
 | `entries[request].url` 的 **query string** | **整段丟棄**，只保留 `origin + pathname` | OAuth callback、簽章 URL、webhook URL 的密鑰全在 query 裡。連 key 名都不保留（key 名本身資訊價值低，而保留 key 名的實作會多一條可能寫錯的過濾路徑） |
-| `frame.vars` | 丟棄 | 區域變數常含 token、連線字串、使用者資料。**唯一例外**：`config.includeFrameVars === true`（管理者明示承擔風險，agent 無法覆寫） |
+| `frame.vars` | 丟棄 | 區域變數常含 token、連線字串、使用者資料。**唯一例外**：`config.includeFrameVars === true`（管理者明示承擔風險，agent 無法覆寫）；若最終結果仍超過大小上限，最後降級仍會移除。 |
 | `mechanism.data` | 丟棄 | 見 §4.3 |
 | tag key 命中機密樣式 | 整筆丟棄 | 見 §4.5 |
 | `contexts.state` | 丟棄 | 完整前端 state dump |
@@ -357,15 +357,16 @@ Sentry 每個 frame 的 `context` 是 `[[lineNo, sourceText], …]`，通常前�
 ### 4.8 最終大小上限與降級
 
 - 常數 `MAX_TOOL_RESULT_BYTES = 200_000`（**bytes**，定義於 `trim.ts`，不對使用者開放設定）。`trimEvent(raw, options)` 的 `options` 帶一個 optional 的 `maxBytes`，預設為此常數；**它只是給測試注入小上限用的接縫，`tools.ts` 一律不傳**，因此對使用者而言仍是硬常數。
-- 大小的量測一律用 `Buffer.byteLength(JSON.stringify(payload), 'utf8')`。**大小檢查用 bytes、字串截斷用字元數（§4.9），兩者單位不同是刻意的** —— 截斷上限是給人 / agent 讀的語意界線，用字元較直覺；大小上限要對應真實傳輸量，中日文 stacktrace 在 UTF-8 下一字元 3 bytes，用字元數會低估 3 倍。
+- 大小的量測一律用 `Buffer.byteLength(JSON.stringify(payload), 'utf8')`，其中 `payload` 是最終 `{ data, meta }` envelope，而不是只量 `data`。**大小檢查用 bytes、字串截斷用字元數（§4.9），兩者單位不同是刻意的** —— 截斷上限是給人 / agent 讀的語意界線，用字元較直覺；大小上限要對應真實傳輸量，中日文 stacktrace 在 UTF-8 下一字元 3 bytes，用字元數會低估 3 倍。
 - **五個工具的最終輸出都要通過這個檢查**；但只有 `sentry_get_latest_event` / `sentry_get_event` 有降級路徑，其餘三個工具的輸出形狀固定且小，超標即直接丟 `RESPONSE_TOO_LARGE`（第二種訊息，見 §6.1）。
 - event 工具的降級：`trimEvent()` 在記憶體中保有解析後的原始 event，序列化後若超標，依**固定順序**逐級重跑並記錄 `meta.trimmed.degraded`：
   1. 移除所有 frame 的 `context` → `"source_context"`
   2. 再移除 `breadcrumbs` → `"breadcrumbs"`
-  3. 再以 `max_frames = 10` 重跑 §4.2 的選取 → `"frames"`
+  3. 再以 `max_frames = min(本次呼叫值, 10)` 重跑 §4.2 的選取 → `"frames"`；絕不把呼叫端原本 1–9 的 cap 反向提高到 10。
+  4. 僅在 `includeFrameVars === true` 時，再移除 frame vars → `"frame_vars"`
   - `degraded` 只記錄**最後套用到的那一級**（隱含前面幾級都已套用）。
   - **每次降級重跑後，`omittedFrames` / `omittedBreadcrumbs` / `omittedExceptionValues` / `omittedTags` 一律以「原始總數 − 最終保留數」重算**，不是累加、也不是只算「超出上限的部分」。
-- 三級降級後仍超標 → 丟 `RESPONSE_TOO_LARGE`（第二種訊息）。
+- 全部適用的降級階梯完成後仍超標 → 丟 `RESPONSE_TOO_LARGE`（第二種訊息）。
 
 `maxResponseBytes`（預設 5MB）是**HTTP body 的硬上限**，用來擋住異常巨大的回應與惡意/故障的上游，不是常態的體積防線 —— 常態體積由 §4.9 的截斷與本節的降級負責。
 
@@ -482,7 +483,7 @@ createHttpError(status: number, ctx: {
 
 1. **只取結構化欄位**：依序嘗試 `body.detail`、`body.error`；必須是 string，否則回 `undefined`。**絕不整包序列化 response body。**
 2. **控制字元清洗**：移除 `\r` `\n` 與其他 ASCII 控制字元，連續空白壓成單一空格，前後 trim。
-3. **過濾疑似機密**：若該字串包含 `token` 的字面值，或命中 `/(bearer\s|authorization|sntry[us]_|api[_-]?key|secret|password|token\s*[:=])/i` → **整條放棄**（回 `undefined`）。
+3. **過濾疑似機密**：若該字串包含設定 token 的字面值，或命中 credential 樣式（Bearer、Authorization、Sentry token prefix、API/private/access/SSH/signing key、secret、password/passwd/passphrase/pwd、`token:` / `token=`、credential、JWT、DSN、signature）→ **整條放棄**（回 `undefined`）。實作 regex 以 `src/errors.ts` 的 `SECRET_PATTERN` 為唯一準據。
 4. **長度上限 200 字元**：超過即截斷並在尾端加 `…`。
 5. 結果同時放進 `SentryApiError.detail` 與訊息尾端的 `Sentry said: {detail}`。
 
@@ -621,7 +622,7 @@ Fixtures：`event-node.json`（Node.js 未捕捉例外）、`event-python.json`�
 - `includeFrameVars: true` 時 `vars` 才出現。
 - breadcrumbs：`include_breadcrumbs: false` 完全不出現；`true` 只留最後 20 筆且欄位正確；`omittedBreadcrumbs === 原始總數 − 20`。
 - `exception` 缺席但有 `threads` → 取 `crashed === true` 的 thread；都沒 `crashed` → 取第一個；`meta.trimmed.exceptionSource === 'threads'`。
-- **三級降級**（§4.8）：`event-oversized.json` 驗證 `degraded` 依序為 `source_context` → `breadcrumbs` → `frames`（用不同的 `MAX_TOOL_RESULT_BYTES` 注入值或不同 fixture 尺寸各測一級），`degraded` 只記最後一級；**降級後 `omittedFrames` / `omittedBreadcrumbs` 以「原始總數 − 最終保留數」重算**（明確斷言數字，例如第三級後 `omittedFrames === 60 - 10`）；仍超標時丟 `RESPONSE_TOO_LARGE`（來源 B 訊息，含 `degraded: frames`）。
+- **降級階梯**（§4.8）：`event-oversized.json` 驗證 `degraded` 依序為 `source_context` → `breadcrumbs` → `frames`；另以 oversized frame vars 驗證 opt-in config 下的最終 `frame_vars` fallback。`degraded` 只記最後一級；**降級後 `omittedFrames` / `omittedBreadcrumbs` 以「原始總數 − 最終保留數」重算**（明確斷言數字，例如 frames 降級後 `omittedFrames === 60 - 10`）；仍超標時丟 `RESPONSE_TOO_LARGE`（來源 B 訊息含最後一級）。
 - 大小量測用 bytes：一份**只含中日文、字元數遠低於上限但 UTF-8 bytes 超標**的 fixture 必須觸發降級（若用字元數量測則不會觸發，此測試即為 §4.8 單位規則的防迴歸）。
 - 非 event 工具超標即丟（不降級），訊息為來源 B。
 - `meta.trimmed` 只含動態欄位：正常情況下不出現 `droppedFields` / `droppedEntries` 這類靜態清單；所有計數為 0 時該 key 不輸出；全部沒有時不輸出 `trimmed`。

@@ -78,14 +78,15 @@ export SENTRY_URL='https://sentry.example.com'
 - Stacktrace 的局部变量，除非开启 `includeFrameVars`。
 - `mechanism.data`、`contexts.state`、`packages`、`modules` 与 `_meta`。
 - `user.email`、`user.ip_address` 与 `user.username`，只保留 `user.id`。
-- Key 看起来像机密的 tag（`token`、`secret`、`password`、`api_key`、`auth`、`cookie`、`session`、
-  `credential`），以及所有 `sentry:` 前缀的内部 tag。
+- Key 看起来像机密或直接 PII 的 tag（`token`、`secret`、`password`、`passwd`、`api_key`、`auth`、
+  `cookie`、`session`、`credential`、private/access key、JWT、DSN、signature、email、IP address、
+  username），以及所有 `sentry:` 前缀的内部 tag。
 - 会泄漏构建路径的 frame 字段，例如 `absPath`。
 
 会缩减而非整个移除：
 
-- **Frames。** Frame 由外而内排列。数量超过 `max_frames` 时，本插件保留全部 in-app frame 加上最内层的
-  两个 frame，再从尾部往前补足，并保持原始顺序。
+- **Frames。** Frame 由外而内排列。数量超过 `max_frames` 时，本插件优先保留 in-app frame、必定纳入
+  最内层两个 frame，有空位时再从尾部往前补足，且绝不超过上限；输出保持原始顺序。
 - **源码片段。** 只保留最内层 3 个 in-app frame，每个至多 11 行，每行至多 200 字符。
 - **Chained exception。** 至多保留最内层的 2 个 `exception.values`；`max_frames` 对每个 stacktrace
   各自套用。
@@ -93,8 +94,8 @@ export SENTRY_URL='https://sentry.example.com'
 - **字符串。** Exception value 上限 2000 字符；title、message、culprit 上限 500 字符。
 
 若裁剪后仍超过 200KB 的工具结果上限，本插件会按固定顺序降级 —— 先源码片段、再 breadcrumbs、
-最后把 frame 压到 10 个 —— 并在 `meta.trimmed.degraded` 报告最后套用的那一级。像 `omittedFrames`
-这类计数一律是「原始总数减去你实际收到的数量」，不是逐级累加。
+再把 frame 压到最多 10 个（不会提高调用端原本更低的上限）；若管理员开启的 frame vars 仍使结果过大，最后会移除 vars。最后套用的层级会记录在
+`meta.trimmed.degraded`。像 `omittedFrames` 这类计数一律是「原始总数减去你实际收到的数量」，不是逐级累加。
 
 ## 语言
 
@@ -126,7 +127,7 @@ export SENTRY_URL='https://sentry.example.com'
 
 ## 开发
 
-本项目一律使用 Bun：
+本项目使用 Bun 作为包管理器与 script runner；发布后的插件 runtime 以上述 Node.js 版本为准：
 
 ```sh
 bun install --frozen-lockfile

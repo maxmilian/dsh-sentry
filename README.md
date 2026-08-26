@@ -82,15 +82,16 @@ Removed from every event, unconditionally:
 - Stack frame local variables, unless `includeFrameVars` is on.
 - `mechanism.data`, `contexts.state`, `packages`, `modules`, and `_meta`.
 - `user.email`, `user.ip_address`, and `user.username`. Only `user.id` survives.
-- Any tag whose key looks like a secret (`token`, `secret`, `password`, `api_key`, `auth`, `cookie`,
-  `session`, `credential`), plus every `sentry:`-prefixed internal tag.
+- Any tag whose key looks like a secret or direct PII (`token`, `secret`, `password`, `passwd`,
+  `api_key`, `auth`, `cookie`, `session`, `credential`, private/access keys, JWT, DSN, signature,
+  email, IP address, or username), plus every `sentry:`-prefixed internal tag.
 - Frame fields that leak build paths, such as `absPath`.
 
 Reduced rather than removed:
 
 - **Frames.** Frames run outermost to innermost. When there are more than `max_frames`, the plugin
-  keeps every in-app frame plus the two innermost frames, then fills from the tail, and preserves the
-  original order.
+  prioritizes in-app frames, always includes the two innermost frames, fills from the tail when room
+  remains, and never exceeds the cap. Output preserves the original order.
 - **Source context.** Kept only for the three innermost in-app frames, at most 11 lines each, each
   line capped at 200 characters.
 - **Chained exceptions.** At most the two innermost `exception.values`; `max_frames` applies to each
@@ -99,7 +100,8 @@ Reduced rather than removed:
 - **Strings.** Exception values cap at 2000 characters; titles, messages, and culprits at 500.
 
 If the result still exceeds the 200KB tool-result budget, the plugin degrades in fixed steps —
-source context, then breadcrumbs, then frames down to 10 — and reports the last step it applied in
+source context, then breadcrumbs, then frames down to at most 10 without raising a lower caller cap. If administrator-enabled frame variables
+still make the result too large, they are removed as a final fallback. The last step is reported in
 `meta.trimmed.degraded`. Counters such as `omittedFrames` are always "original total minus what you
 received", never a running tally.
 
@@ -138,7 +140,8 @@ are stable diagnostic strings that tests and reviews compare against.
 
 ## Development
 
-This project uses Bun exclusively:
+This project uses Bun as its package manager and script runner; the published plugin runtime targets
+the Node.js versions listed above:
 
 ```sh
 bun install --frozen-lockfile
