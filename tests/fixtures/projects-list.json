@@ -1,0 +1,65 @@
+[
+  {
+    "id": "11",
+    "slug": "web-app",
+    "name": "Web App",
+    "platform": "javascript-react",
+    "status": "active",
+    "dateCreated": "2025-01-02T03:04:05.000Z",
+    "isMember": true,
+    "firstEvent": "2025-01-03T00:00:00.000Z",
+    "teams": [
+      {
+        "id": "1",
+        "slug": "frontend",
+        "name": "Frontend"
+      }
+    ],
+    "features": [
+      "alert-filters",
+      "minidump",
+      "similarity-view"
+    ],
+    "options": {
+      "sentry:resolve_age": 0,
+      "filters:blacklisted_ips": ""
+    },
+    "latestDeploys": {
+      "production": {
+        "dateFinished": "2025-06-01T00:00:00.000Z"
+      }
+    },
+    "access": [
+      "project:read",
+      "project:write"
+    ],
+    "avatar": {
+      "avatarType": "letter_avatar",
+      "avatarUuid": null
+    },
+    "processingIssues": 0
+  },
+  {
+    "id": "12",
+    "slug": "api",
+    "name": "API",
+    "platform": "python",
+    "status": "active",
+    "dateCreated": "2025-02-02T03:04:05.000Z",
+    "isMember": false,
+    "firstEvent": null,
+    "teams": [
+      {
+        "id": "2",
+        "slug": "backend",
+        "name": "Backend"
+      }
+    ],
+    "features": [],
+    "options": {},
+    "access": [],
+    "avatar": {
+      "avatarType": "letter_avatar"
+    }
+  }
+]
