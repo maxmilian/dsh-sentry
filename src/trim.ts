@@ -45,6 +45,9 @@ const ISSUE_FIELDS = [
 
 const MAX_ACTIVITY_ENTRIES = 3
 
+/** Frame cap used by the last rung of the degradation ladder. */
+const DEGRADED_MAX_FRAMES = 10
+
 /** Reduces the organization project list to a small, stable shape. */
 export function trimProjectList(raw: JsonValue, hasMore?: boolean): TrimResult {
   const projects = asArray(raw).map(trimProject)
@@ -149,15 +152,46 @@ function truncateField(value: JsonValue | undefined): JsonValue | undefined {
   return typeof value === 'string' ? truncate(value, TITLE_CHARS) : undefined
 }
 
-/** Reduces one event payload: frame selection, secret stripping, string caps. */
+/** Reduces one event payload, degrading in fixed steps until it fits the byte budget. */
 export function trimEvent(raw: JsonValue, options: TrimEventOptions): TrimResult {
   const budget = options.maxBytes ?? MAX_TOOL_RESULT_BYTES
-  const pass: TrimPass = {
-    maxFrames: options.maxFrames,
-    includeBreadcrumbs: options.includeBreadcrumbs,
-    includeSourceContext: true,
+  for (const pass of degradationLadder(options)) {
+    const built = buildEvent(raw, options, pass)
+    if (measureBytes(built.data) <= budget) {
+      return built.trimmed ? { data: built.data, trimmed: built.trimmed } : { data: built.data }
+    }
   }
-  const built = buildEvent(raw, options, pass)
-  if (measureBytes(built.data) > budget) throw tooLargeAfterTrimming()
-  return built.trimmed ? { data: built.data, trimmed: built.trimmed } : { data: built.data }
+  throw tooLargeAfterTrimming('frames')
+}
+
+/**
+ * Each rung rebuilds from the raw event rather than mutating the previous result, so the
+ * omitted counters are always "original total minus final kept" with no accumulation.
+ */
+function degradationLadder(options: TrimEventOptions): readonly TrimPass[] {
+  return [
+    {
+      maxFrames: options.maxFrames,
+      includeBreadcrumbs: options.includeBreadcrumbs,
+      includeSourceContext: true,
+    },
+    {
+      maxFrames: options.maxFrames,
+      includeBreadcrumbs: options.includeBreadcrumbs,
+      includeSourceContext: false,
+      degraded: 'source_context',
+    },
+    {
+      maxFrames: options.maxFrames,
+      includeBreadcrumbs: false,
+      includeSourceContext: false,
+      degraded: 'breadcrumbs',
+    },
+    {
+      maxFrames: DEGRADED_MAX_FRAMES,
+      includeBreadcrumbs: false,
+      includeSourceContext: false,
+      degraded: 'frames',
+    },
+  ]
 }
