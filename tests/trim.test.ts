@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { SentryApiError } from '../src/errors.js'
+import type { TrimEventOptions } from '../src/trim.js'
 import {
   MAX_TOOL_RESULT_BYTES,
   trimEvent,
@@ -175,7 +176,7 @@ const eventPython = rawEventPython as unknown as JsonValue
 const eventBrowser = rawEventBrowser as unknown as JsonValue
 const eventChained = rawEventChained as unknown as JsonValue
 
-const BASE = { maxFrames: 20, includeBreadcrumbs: true, includeFrameVars: false } as const
+const BASE: TrimEventOptions = { maxFrames: 20, includeBreadcrumbs: true, includeFrameVars: false }
 
 interface TrimmedFrame {
   readonly inApp?: boolean
@@ -202,7 +203,7 @@ interface TrimmedEvent {
   readonly breadcrumbs?: { message: string }[]
 }
 
-function trimNode(overrides: Partial<typeof BASE> = {}) {
+function trimNode(overrides: Partial<TrimEventOptions> = {}) {
   const result = trimEvent(eventNode, { ...BASE, ...overrides })
   return { event: result.data as unknown as TrimmedEvent, result }
 }

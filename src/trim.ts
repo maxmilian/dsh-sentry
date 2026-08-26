@@ -1,11 +1,21 @@
-import { SentryApiError } from './errors.js'
+import type { TrimEventOptions, TrimPass } from './trim-event.js'
+import { buildEvent } from './trim-event.js'
+import {
+  asArray,
+  asObject,
+  assertWithinBudget,
+  isJsonObject,
+  MAX_TOOL_RESULT_BYTES,
+  measureBytes,
+  putIfPresent,
+  TITLE_CHARS,
+  tooLargeAfterTrimming,
+  truncate,
+} from './trim-shared.js'
 import type { JsonObject, JsonValue, TrimResult } from './types.js'
 
-/** Maximum serialized size of one tool result, in UTF-8 bytes. */
-export const MAX_TOOL_RESULT_BYTES = 200_000
-
-/** Character cap for titles, messages, culprits, and issue metadata values. */
-export const TITLE_CHARS = 500
+export type { TrimEventOptions }
+export { MAX_TOOL_RESULT_BYTES, measureBytes, TITLE_CHARS, truncate }
 
 const PROJECT_FIELDS = [
   'id',
@@ -34,33 +44,6 @@ const ISSUE_FIELDS = [
 ] as const
 
 const MAX_ACTIVITY_ENTRIES = 3
-
-/** Truncates to a character budget, marking the cut with an ellipsis. */
-export function truncate(value: string, max: number): string {
-  return value.length > max ? `${value.slice(0, max)}…` : value
-}
-
-/**
- * Serialized size in UTF-8 bytes. Byte budgets and character caps are deliberately
- * different units: caps are a readability limit, budgets track real transfer size.
- */
-export function measureBytes(value: JsonObject): number {
-  return Buffer.byteLength(JSON.stringify(value), 'utf8')
-}
-
-/** Throws when a trimmed payload still exceeds the tool result budget. */
-export function assertWithinBudget(data: JsonObject, degraded?: string): void {
-  if (measureBytes(data) <= MAX_TOOL_RESULT_BYTES) return
-  throw tooLargeAfterTrimming(degraded)
-}
-
-/** Creates the trimming variant of RESPONSE_TOO_LARGE. */
-export function tooLargeAfterTrimming(degraded?: string): SentryApiError {
-  return new SentryApiError(
-    `Sentry event was too large to summarize even after trimming (degraded: ${degraded ?? 'none'}).`,
-    { code: 'RESPONSE_TOO_LARGE' },
-  )
-}
 
 /** Reduces the organization project list to a small, stable shape. */
 export function trimProjectList(raw: JsonValue, hasMore?: boolean): TrimResult {
@@ -166,28 +149,15 @@ function truncateField(value: JsonValue | undefined): JsonValue | undefined {
   return typeof value === 'string' ? truncate(value, TITLE_CHARS) : undefined
 }
 
-/** Assigns a value only when it is neither undefined nor null, keeping payloads clean. */
-export function putIfPresent(target: JsonObject, key: string, value: JsonValue | undefined): void {
-  if (value === undefined || value === null) return
-  target[key] = value
-}
-
-/** Narrows a JSON value to an object, or throws INVALID_RESPONSE. */
-export function asObject(raw: JsonValue): JsonObject {
-  if (!isJsonObject(raw)) throw invalidResponse()
-  return raw
-}
-
-function asArray(raw: JsonValue): JsonValue[] {
-  if (!Array.isArray(raw)) throw invalidResponse()
-  return raw
-}
-
-/** Type guard for plain JSON objects. */
-export function isJsonObject(value: JsonValue | undefined): value is JsonObject {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-function invalidResponse(): SentryApiError {
-  return new SentryApiError('Sentry returned an unexpected response.', { code: 'INVALID_RESPONSE' })
+/** Reduces one event payload: frame selection, secret stripping, string caps. */
+export function trimEvent(raw: JsonValue, options: TrimEventOptions): TrimResult {
+  const budget = options.maxBytes ?? MAX_TOOL_RESULT_BYTES
+  const pass: TrimPass = {
+    maxFrames: options.maxFrames,
+    includeBreadcrumbs: options.includeBreadcrumbs,
+    includeSourceContext: true,
+  }
+  const built = buildEvent(raw, options, pass)
+  if (measureBytes(built.data) > budget) throw tooLargeAfterTrimming()
+  return built.trimmed ? { data: built.data, trimmed: built.trimmed } : { data: built.data }
 }
