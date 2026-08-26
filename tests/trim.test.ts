@@ -2,9 +2,15 @@ import { describe, expect, it } from 'vitest'
 
 import type { SentryApiError } from '../src/errors.js'
 import { MAX_TOOL_RESULT_BYTES, trimIssue, trimIssueList, trimProjectList } from '../src/trim.js'
-import issueDetail from './fixtures/issue-detail.json' with { type: 'json' }
-import issuesList from './fixtures/issues-list.json' with { type: 'json' }
-import projectsList from './fixtures/projects-list.json' with { type: 'json' }
+import type { JsonValue } from '../src/types.js'
+import rawIssueDetail from './fixtures/issue-detail.json' with { type: 'json' }
+import rawIssuesList from './fixtures/issues-list.json' with { type: 'json' }
+import rawProjectsList from './fixtures/projects-list.json' with { type: 'json' }
+
+// JSON imports infer literal types without an index signature, so they need one cast.
+const issueDetail = rawIssueDetail as unknown as JsonValue
+const issuesList = rawIssuesList as unknown as JsonValue
+const projectsList = rawProjectsList as unknown as JsonValue
 
 function caught(run: () => unknown): SentryApiError | undefined {
   try {
