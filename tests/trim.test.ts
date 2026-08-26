@@ -13,6 +13,7 @@ import type { JsonValue } from '../src/types.js'
 import rawEventBrowser from './fixtures/event-browser.json' with { type: 'json' }
 import rawEventChained from './fixtures/event-chained.json' with { type: 'json' }
 import rawEventNode from './fixtures/event-node.json' with { type: 'json' }
+import rawEventOversized from './fixtures/event-oversized.json' with { type: 'json' }
 import rawEventPython from './fixtures/event-python.json' with { type: 'json' }
 import rawIssueDetail from './fixtures/issue-detail.json' with { type: 'json' }
 import rawIssuesList from './fixtures/issues-list.json' with { type: 'json' }
@@ -405,5 +406,55 @@ describe('trimEvent resilience', () => {
     const serialized = JSON.stringify(trimNode().result.trimmed ?? {})
     expect(serialized).not.toContain('droppedFields')
     expect(serialized).not.toContain('droppedEntries')
+  })
+})
+
+const eventOversized = rawEventOversized as unknown as JsonValue
+
+// Measured rung sizes for event-oversized.json, in UTF-8 bytes:
+//   full 17513 -> no source context 10712 -> no breadcrumbs 4756 -> 10 frames 3596
+describe('trimEvent degradation ladder', () => {
+  it('does not degrade when the payload fits', () => {
+    const result = trimEvent(eventOversized, { ...BASE, maxBytes: 20_000 })
+
+    expect(result.trimmed?.degraded).toBeUndefined()
+    expect(framesOf(result.data as unknown as TrimmedEvent)).toHaveLength(20)
+  })
+
+  it('drops source context first', () => {
+    const result = trimEvent(eventOversized, { ...BASE, maxBytes: 12_000 })
+    const event = result.data as unknown as TrimmedEvent
+
+    expect(result.trimmed?.degraded).toBe('source_context')
+    expect(event.breadcrumbs).toBeDefined()
+    expect(framesOf(event).every((frame) => frame.context === undefined)).toBe(true)
+  })
+
+  it('drops breadcrumbs second', () => {
+    const result = trimEvent(eventOversized, { ...BASE, maxBytes: 6_000 })
+    const event = result.data as unknown as TrimmedEvent
+
+    expect(result.trimmed?.degraded).toBe('breadcrumbs')
+    expect(event.breadcrumbs).toBeUndefined()
+    expect(framesOf(event)).toHaveLength(20)
+  })
+
+  it('reduces frames to ten last and recomputes the counters', () => {
+    const result = trimEvent(eventOversized, { ...BASE, maxBytes: 4_000 })
+    const event = result.data as unknown as TrimmedEvent
+
+    expect(result.trimmed?.degraded).toBe('frames')
+    expect(framesOf(event)).toHaveLength(10)
+    expect(result.trimmed?.omittedFrames).toBe(50)
+    expect(result.trimmed?.omittedBreadcrumbs).toBe(100)
+  })
+
+  it('throws when even the last rung is too big', () => {
+    const error = caught(() => trimEvent(eventOversized, { ...BASE, maxBytes: 500 }))
+
+    expect(error?.code).toBe('RESPONSE_TOO_LARGE')
+    expect(error?.message).toBe(
+      'Sentry event was too large to summarize even after trimming (degraded: frames).',
+    )
   })
 })
