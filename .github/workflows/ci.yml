@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.5
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run test --coverage
+      - run: bun run build
+      - name: Pack smoke test
+        run: |
+          mkdir -p artifacts
+          bun pm pack --destination artifacts
+          tarball="$(find artifacts -name 'dsh-sentry-*.tgz' -print -quit)"
+          test -n "$tarball"
+          tar -tzf "$tarball" | tee /tmp/package-files.txt
+          grep -q 'package/lib/index.js' /tmp/package-files.txt
+          grep -q 'package/lib/index.d.ts' /tmp/package-files.txt
+          grep -q 'package/lib/locales.js' /tmp/package-files.txt
+          grep -q 'package/lib/locales.d.ts' /tmp/package-files.txt
+          grep -q 'package/cordis.patch.yml' /tmp/package-files.txt
+          grep -q 'package/README.md' /tmp/package-files.txt
+          grep -q 'package/README.zh-TW.md' /tmp/package-files.txt
+          grep -q 'package/README.zh-CN.md' /tmp/package-files.txt
+          grep -q 'package/README.ja.md' /tmp/package-files.txt
+          grep -q 'package/LICENSE' /tmp/package-files.txt
+
+  node-runtime:
+    name: Node.js ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - '22.19.0'
+          - '24'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.5
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - name: Run tests with Node.js
+        run: node node_modules/vitest/vitest.mjs run
+      - name: Import built plugin with Node.js
+        run: node --input-type=module --eval "await import('./lib/index.js')"
