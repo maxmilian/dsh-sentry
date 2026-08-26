@@ -340,3 +340,183 @@ describe('transport', () => {
     })
   })
 })
+
+function neverCalled(): MockFetch {
+  return () => {
+    throw new Error('fetch must not be called for invalid input')
+  }
+}
+
+describe('endpoints', () => {
+  it('lists projects with a fixed page size', async () => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(jsonResponse([]))
+    await createClient(fetchMock).listProjects()
+
+    const url = calledUrl(fetchMock)
+    expect(url.pathname).toBe('/api/0/organizations/acme/projects/')
+    expect(url.searchParams.get('per_page')).toBe('100')
+  })
+
+  it('uses the project endpoint when a slug is given and the org endpoint otherwise', async () => {
+    const scoped = vi.fn<MockFetch>().mockResolvedValue(jsonResponse([]))
+    await createClient(scoped).searchIssues({ projectSlug: 'web-app' })
+    expect(calledUrl(scoped).pathname).toBe('/api/0/projects/acme/web-app/issues/')
+
+    const org = vi.fn<MockFetch>().mockResolvedValue(jsonResponse([]))
+    await createClient(org).searchIssues({})
+    expect(calledUrl(org).pathname).toBe('/api/0/organizations/acme/issues/')
+  })
+
+  it('applies search defaults and passes explicit values through', async () => {
+    const defaults = vi.fn<MockFetch>().mockResolvedValue(jsonResponse([]))
+    await createClient(defaults).searchIssues({})
+    const defaulted = calledUrl(defaults).searchParams
+    expect(defaulted.get('query')).toBe('is:unresolved')
+    expect(defaulted.get('statsPeriod')).toBe('14d')
+    expect(defaulted.get('sort')).toBe('date')
+    expect(defaulted.get('per_page')).toBe('25')
+
+    const explicit = vi.fn<MockFetch>().mockResolvedValue(jsonResponse([]))
+    await createClient(explicit).searchIssues({
+      query: 'is:resolved',
+      statsPeriod: '24h',
+      sort: 'freq',
+      environment: 'production',
+      limit: 100,
+      cursor: '0:100:0',
+    })
+    const params = calledUrl(explicit).searchParams
+    expect(params.get('query')).toBe('is:resolved')
+    expect(params.get('statsPeriod')).toBe('24h')
+    expect(params.get('sort')).toBe('freq')
+    expect(params.get('environment')).toBe('production')
+    expect(params.get('per_page')).toBe('100')
+    expect(params.get('cursor')).toBe('0:100:0')
+  })
+
+  it('flags a recommended sort so a 400 becomes UNSUPPORTED_BY_INSTANCE', async () => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(jsonResponse({ detail: 'nope' }, { status: 400 }))
+
+    await expect(
+      createClient(fetchMock).searchIssues({ sort: 'recommended' }),
+    ).rejects.toMatchObject({ code: 'UNSUPPORTED_BY_INSTANCE' })
+  })
+
+  it('maps a non-search 400 to SENTRY_HTTP_ERROR', async () => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValue(jsonResponse({ detail: 'nope' }, { status: 400 }))
+
+    await expect(createClient(fetchMock).getEvent('web-app', 'a'.repeat(32))).rejects.toMatchObject(
+      {
+        code: 'SENTRY_HTTP_ERROR',
+      },
+    )
+  })
+
+  it.each([
+    ['limit 0', () => createClient(neverCalled()).searchIssues({ limit: 0 })],
+    ['limit 101', () => createClient(neverCalled()).searchIssues({ limit: 101 })],
+    ['bad cursor', () => createClient(neverCalled()).searchIssues({ cursor: 'nope' })],
+    ['slash slug', () => createClient(neverCalled()).searchIssues({ projectSlug: 'a/b' })],
+    ['dotdot slug', () => createClient(neverCalled()).searchIssues({ projectSlug: '../etc' })],
+    ['upper slug', () => createClient(neverCalled()).searchIssues({ projectSlug: 'Web' })],
+    ['long query', () => createClient(neverCalled()).searchIssues({ query: 'x'.repeat(401) })],
+    ['short event id', () => createClient(neverCalled()).getEvent('web-app', 'abc')],
+    ['non-hex event id', () => createClient(neverCalled()).getEvent('web-app', 'z'.repeat(32))],
+    ['bad issue id', () => createClient(neverCalled()).getIssue('-A-1')],
+    ['empty issue id', () => createClient(neverCalled()).getIssue('')],
+  ])('rejects %s before sending a request', async (_label, call) => {
+    await expect(call()).rejects.toMatchObject({ code: 'INVALID_INPUT' })
+  })
+
+  it('treats an all-digit issue as a numeric id with one request', async () => {
+    const numeric = vi.fn<MockFetch>().mockResolvedValue(jsonResponse({ id: '123456' }))
+    await createClient(numeric).getIssue('123456')
+    expect(numeric).toHaveBeenCalledTimes(1)
+    expect(calledUrl(numeric).pathname).toBe('/api/0/issues/123456/')
+
+    // A Response body can only be read once, so each call needs a fresh Response.
+    const dashed = vi.fn<MockFetch>().mockImplementation(async () => jsonResponse({ groupId: '9' }))
+    await createClient(dashed).getIssue('123-456')
+    expect(calledUrl(dashed).pathname).toBe('/api/0/organizations/acme/shortids/123-456/')
+  })
+
+  it('resolves a short id and upper-cases it first', async () => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValueOnce(jsonResponse({ groupId: '987654' }))
+      .mockResolvedValueOnce(jsonResponse({ id: '987654' }))
+
+    const result = await createClient(fetchMock).getIssue('proj-abc')
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(calledUrl(fetchMock, 0).pathname).toBe('/api/0/organizations/acme/shortids/PROJ-ABC/')
+    expect(calledUrl(fetchMock, 1).pathname).toBe('/api/0/issues/987654/')
+    expect(result.data).toEqual({ id: '987654' })
+  })
+
+  it('accepts a numeric groupId type', async () => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValueOnce(jsonResponse({ groupId: 987654 }))
+      .mockResolvedValueOnce(jsonResponse({ id: '987654' }))
+
+    await createClient(fetchMock).getIssue('PROJ-ABC')
+    expect(calledUrl(fetchMock, 1).pathname).toBe('/api/0/issues/987654/')
+  })
+
+  it.each([
+    ['missing', {}],
+    ['null', { groupId: null }],
+    ['non numeric', { groupId: 'abc' }],
+    ['nested', { group: { id: '5' } }],
+    ['too long', { groupId: '1'.repeat(21) }],
+  ])('rejects an unusable groupId (%s) without a second request', async (_label, body) => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(jsonResponse(body))
+
+    await expect(createClient(fetchMock).getIssue('PROJ-ABC')).rejects.toMatchObject({
+      code: 'INVALID_RESPONSE',
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('maps a shortids 404 to NOT_FOUND', async () => {
+    const fetchMock = vi.fn<MockFetch>().mockResolvedValue(jsonResponse({}, { status: 404 }))
+
+    await expect(createClient(fetchMock).getIssue('PROJ-ABC')).rejects.toMatchObject({
+      code: 'NOT_FOUND',
+    })
+  })
+
+  it('shares one deadline across both requests of a short id call', async () => {
+    vi.useFakeTimers()
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockImplementationOnce(async () => {
+        await vi.advanceTimersByTimeAsync(600)
+        return jsonResponse({ groupId: '5' })
+      })
+      .mockImplementationOnce(hangUntilAborted)
+
+    const pending = expect(createClient(fetchMock).getIssue('PROJ-ABC')).rejects.toMatchObject({
+      code: 'REQUEST_TIMEOUT',
+    })
+    await vi.advanceTimersByTimeAsync(500)
+    await pending
+  })
+
+  it('builds the event endpoints', async () => {
+    const latest = vi.fn<MockFetch>().mockResolvedValue(jsonResponse({ eventID: 'a' }))
+    await createClient(latest).getLatestEvent('123')
+    expect(calledUrl(latest).pathname).toBe('/api/0/issues/123/events/latest/')
+
+    const single = vi.fn<MockFetch>().mockResolvedValue(jsonResponse({ eventID: 'a' }))
+    await createClient(single).getEvent('web-app', 'b'.repeat(32))
+    expect(calledUrl(single).pathname).toBe(
+      `/api/0/projects/acme/web-app/events/${'b'.repeat(32)}/`,
+    )
+  })
+})
