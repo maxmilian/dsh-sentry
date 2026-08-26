@@ -34,6 +34,13 @@ function calledUrl(fetchMock: ReturnType<typeof vi.fn<MockFetch>>, index = 0): U
   return new URL(String(fetchMock.mock.calls[index]?.[0]))
 }
 
+/** Mimics real fetch: never settles until its AbortSignal fires, then rejects. */
+function hangUntilAborted(_input: string | URL | Request, init?: RequestInit): Promise<Response> {
+  return new Promise((_resolve, reject) => {
+    init?.signal?.addEventListener('abort', () => reject(new Error('aborted')), { once: true })
+  })
+}
+
 afterEach(() => {
   vi.useRealTimers()
 })
@@ -140,7 +147,9 @@ describe('transport', () => {
     expect(calledUrl(fetchMock).toString()).toBe('https://sentry.example.com/api/0/issues/123/')
     const init = fetchMock.mock.calls[0]?.[1]
     expect(init?.method).toBe('GET')
-    expect((init?.headers as Record<string, string>).Authorization).toBe('Bearer secret-token')
+    expect((init?.headers as Record<string, string> | undefined)?.Authorization).toBe(
+      'Bearer secret-token',
+    )
     expect(result.data).toEqual({ id: '1' })
   })
 
@@ -308,10 +317,13 @@ describe('transport', () => {
 
   it('reports a timeout', async () => {
     vi.useFakeTimers()
-    const hang = vi.fn<MockFetch>().mockImplementation(() => new Promise(() => {}))
-    const timedOut = createClient(hang).getIssue('1')
+    const hang = vi.fn<MockFetch>().mockImplementation(hangUntilAborted)
+    // Attach the rejection handler before advancing time, or Node flags it unhandled.
+    const timedOut = expect(createClient(hang).getIssue('1')).rejects.toMatchObject({
+      code: 'REQUEST_TIMEOUT',
+    })
     await vi.advanceTimersByTimeAsync(1_001)
-    await expect(timedOut).rejects.toMatchObject({ code: 'REQUEST_TIMEOUT' })
+    await timedOut
   })
 
   it('honours caller aborts and reports network failures', async () => {
