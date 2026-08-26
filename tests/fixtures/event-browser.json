@@ -701,12 +701,7 @@
       "data": {
         "method": "GET",
         "url": "https://app.example.com/dashboard",
-        "headers": [
-          [
-            "Cookie",
-            "sid=SEKRET"
-          ]
-        ]
+        "headers": [["Cookie", "sid=SEKRET"]]
       }
     }
   ],
