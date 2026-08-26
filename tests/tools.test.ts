@@ -50,11 +50,29 @@ describe('registerSentryTools', () => {
   })
 
   it('marks every tool concurrency safe, schema-shared, and without presentCall', () => {
-    for (const tool of register({ listProjects: vi.fn() }).values()) {
-      expect(tool.isConcurrencySafe?.({})).toBe(true)
-      expect(tool.output?.schema).toBe(OUTPUT_SCHEMA)
+    // defineTool normalizes the schema into a new object, so reference equality with
+    // OUTPUT_SCHEMA is not observable. The invariant that matters is that all five tools
+    // end up with one and the same shape, which deep equality does capture.
+    // defineTool validates args before delegating to isConcurrencySafe, so the probe has to
+    // satisfy every required parameter or it reports false for reasons unrelated to safety.
+    const probe = { issue: '1', project_slug: 'web-app', event_id: 'a'.repeat(32) }
+    const schemas = [...register({ listProjects: vi.fn() }).values()].map((tool) => {
+      expect(tool.isConcurrencySafe?.(probe), tool.name).toBe(true)
       expect(tool.presentCall).toBeUndefined()
+      return tool.output?.schema
+    })
+
+    expect(schemas).toHaveLength(5)
+    for (const schema of schemas) {
+      expect(schema).toEqual(schemas[0])
+      expect(schema).toMatchObject({ type: 'object', additionalProperties: false })
     }
+    expect(OUTPUT_SCHEMA.properties.meta.properties).toMatchObject({
+      nextCursor: { type: 'string' },
+      matchingCount: { type: 'integer' },
+      truncated: { type: 'boolean' },
+      trimmed: { type: 'json' },
+    })
   })
 
   it('trims the client payload instead of forwarding it', async () => {
