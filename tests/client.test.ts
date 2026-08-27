@@ -458,6 +458,38 @@ describe('endpoints', () => {
     expect(result.data).toEqual({ id: '987654' })
   })
 
+  it.each([
+    // Sentry short ids are `<PROJECT_SLUG upper-cased>-<counter>`, and a project slug may
+    // contain hyphens, so the first segment is not hyphen-free. Found by live verification
+    // against sentry.io: the org's projects are apple-ios and apple-ios22222.
+    ['APPLE-IOS-41', 'APPLE-IOS-41'],
+    ['APPLE-IOS22222-5', 'APPLE-IOS22222-5'],
+    ['apple-ios-41', 'APPLE-IOS-41'],
+    ['MY_PROJ-WEB-1A', 'MY_PROJ-WEB-1A'],
+  ])('resolves the hyphenated short id %s', async (input, expected) => {
+    const fetchMock = vi
+      .fn<MockFetch>()
+      .mockResolvedValueOnce(jsonResponse({ groupId: '7692741675' }))
+      .mockResolvedValueOnce(jsonResponse({ id: '7692741675' }))
+
+    const result = await createClient(fetchMock).getIssue(input)
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(calledUrl(fetchMock, 0).pathname).toBe(`/api/0/organizations/acme/shortids/${expected}/`)
+    expect(calledUrl(fetchMock, 1).pathname).toBe('/api/0/issues/7692741675/')
+    expect(result.data).toEqual({ id: '7692741675' })
+  })
+
+  // `neverCalled` throws if fetch is reached, so these also assert no request went out.
+  it.each(['-A-1', '-APPLE-IOS-41', 'APPLE-IOS-', 'APPLE.IOS-41', ''])(
+    'still rejects the malformed issue id %s without sending a request',
+    async (issue) => {
+      await expect(createClient(neverCalled()).getIssue(issue)).rejects.toMatchObject({
+        code: 'INVALID_INPUT',
+      })
+    },
+  )
+
   it('accepts a numeric groupId type', async () => {
     const fetchMock = vi
       .fn<MockFetch>()

@@ -9,8 +9,15 @@ export { resolveConfig, SLUG_PATTERN }
 /** Numeric Sentry identifier, used for issue ids and resolved group ids. */
 export const NUMERIC_ID_PATTERN = /^\d{1,20}$/
 
-/** Sentry short id such as PROJ-ABC, matched after upper-casing. */
-export const SHORT_ID_PATTERN = /^[A-Z0-9][A-Z0-9_]*-[A-Z0-9]+$/
+/**
+ * Sentry short id such as PROJ-ABC, matched after upper-casing.
+ *
+ * A short id is `<project slug upper-cased>-<counter>`, and a project slug may contain
+ * hyphens, so the first segment has to allow them too (`APPLE-IOS-41`). Purely numeric
+ * input never reaches this pattern: `#resolveIssueId` returns it as a numeric id first,
+ * which is what keeps `123-456` unambiguous. A leading hyphen is still rejected.
+ */
+export const SHORT_ID_PATTERN = /^[A-Z0-9][A-Z0-9_-]*-[A-Z0-9]+$/
 
 /** Sentry event id: 32 hexadecimal characters. */
 export const EVENT_ID_PATTERN = /^[0-9a-fA-F]{32}$/
