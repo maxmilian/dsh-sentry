@@ -122,12 +122,33 @@ describe('registerSentryTools', () => {
   })
 
   it('forwards event tool parameters to the client and the trimmer', async () => {
+    const frames = Array.from({ length: 40 }, (_value, index) => ({
+      filename: `app/f${index}.ts`,
+      function: `fn_${index}`,
+      lineNo: index,
+      inApp: true,
+    }))
     const getEvent = vi.fn().mockResolvedValue({
-      data: { id: '1', eventID: 'a', entries: [], tags: [], contexts: {} },
+      data: {
+        id: '1',
+        eventID: 'a',
+        entries: [
+          {
+            type: 'exception',
+            data: { values: [{ type: 'TypeError', value: 'boom', stacktrace: { frames } }] },
+          },
+          {
+            type: 'breadcrumbs',
+            data: { values: [{ type: 'default', category: 'ui', message: 'BREADCRUMB_BAIT' }] },
+          },
+        ],
+        tags: [],
+        contexts: {},
+      },
       meta: {},
     })
     const tools = register({ getEvent })
-    await run(toolOf(tools, 'sentry_get_event'), {
+    const result = await run(toolOf(tools, 'sentry_get_event'), {
       project_slug: 'web-app',
       event_id: 'a'.repeat(32),
       max_frames: 5,
@@ -135,6 +156,37 @@ describe('registerSentryTools', () => {
     })
 
     expect(getEvent).toHaveBeenCalledWith('web-app', 'a'.repeat(32), expect.any(AbortSignal))
+
+    const values = (
+      result.data as { exception: { values: { stacktrace: { frames: unknown[] } }[] } }
+    ).exception.values
+    expect(values[0]?.stacktrace.frames).toHaveLength(5)
+    expect(JSON.stringify(result.data)).not.toContain('BREADCRUMB_BAIT')
+    expect(result.meta.trimmed).toMatchObject({ omittedFrames: 35 })
+  })
+
+  it('defaults max_frames and include_breadcrumbs when the caller omits them', async () => {
+    const getEvent = vi.fn().mockResolvedValue({
+      data: {
+        id: '1',
+        eventID: 'a',
+        entries: [
+          {
+            type: 'breadcrumbs',
+            data: { values: [{ type: 'default', category: 'ui', message: 'BREADCRUMB_BAIT' }] },
+          },
+        ],
+        tags: [],
+        contexts: {},
+      },
+      meta: {},
+    })
+    const result = await run(toolOf(register({ getEvent }), 'sentry_get_event'), {
+      project_slug: 'web-app',
+      event_id: 'a'.repeat(32),
+    })
+
+    expect(JSON.stringify(result.data)).toContain('BREADCRUMB_BAIT')
   })
 
   it.each([-1, 0, 101])('rejects max_frames outside 1-100: %i', async (maxFrames) => {
