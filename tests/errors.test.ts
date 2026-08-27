@@ -79,8 +79,27 @@ describe('sanitizeUpstreamDetail', () => {
     'connection string postgres://u:p@h/db',
     'database url postgres://u:p@h/db',
     'bearer BAIT',
+    'apikey BAIT',
+    'APIKEY BAIT',
+    'accesskey BAIT',
+    'privatekey BAIT',
+    'sshkey BAIT',
+    'sessiontoken BAIT',
+    'refreshtoken BAIT',
   ])('drops detail naming a credential with any separator: %s', (detail) => {
     expect(sanitizeUpstreamDetail({ detail }, TOKEN)).toBeUndefined()
+  })
+
+  it.each([
+    'monkey business is not a supported search key',
+    'turnkey is not a supported search key',
+    'hotkey is not a supported search key',
+    'primary_key is not a supported search key',
+    'idempotency_key is not a supported search key',
+    'cache_key is not a supported search key',
+    'tokenizer failed on the query',
+  ])('keeps a detail that only looks like a credential name: %s', (detail) => {
+    expect(sanitizeUpstreamDetail({ detail }, TOKEN)).toBe(detail)
   })
 
   it('still lets ordinary search errors through', () => {

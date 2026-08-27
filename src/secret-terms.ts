@@ -19,10 +19,12 @@ export function normalizeSecretText(value: string): string {
 
 /**
  * Credential names. Matched against normalized text, so a single space stands for any
- * of the separator conventions above.
+ * of the separator conventions above. The space inside the compound group is optional
+ * because normalization cannot split a run-together or all-caps spelling: `apikey` and
+ * `APIKEY` both normalize to themselves, not to `api key`.
  */
 const CREDENTIAL_PATTERN =
-  /(bearer|authorization|sntry[us]|secret|pass(?:word|wd|phrase)|pwd|credential|token ?[:=]|(?:api|private|public|access|ssh|signing|encryption|client|auth|secret|session|refresh) (?:key|token|secret)|connection string|database url|webhook url|credit ?card|\bssn\b|social security|\bjwt\b|\bdsn\b|signature)/
+  /(bearer|authorization|sntry[us]|secret|pass(?:word|wd|phrase)|pwd|credential|token ?[:=]|(?:api|private|public|access|ssh|signing|encryption|client|auth|secret|session|refresh) ?(?:key|token|secret)|connection string|database url|webhook url|credit ?card|\bssn\b|social security|\bjwt\b|\bdsn\b|signature)/
 
 /** Names that carry personal data rather than credentials. Tag keys only. */
 const PII_PATTERN = /(cookie|session|auth|token|user ?name|e ?mail|\bip(?: address)?\b)/

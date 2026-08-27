@@ -281,6 +281,15 @@ describe('trimEvent security stripping', () => {
     'encryption_key',
     'encryption.key',
     'encryptionKey',
+    // no separator at all, including all-caps acronyms that normalization cannot split
+    'apikey',
+    'APIKey',
+    'APIKEY',
+    'accesskey',
+    'privatekey',
+    'sshkey',
+    'sessiontoken',
+    'refreshtoken',
     // bare credential words
     'bearer',
     'Bearer',
@@ -328,7 +337,22 @@ describe('trimEvent security stripping', () => {
   })
 
   it('keeps ordinary tags that merely look similar to secret names', () => {
-    const safeKeys = ['transaction', 'browser.name', 'server_name', 'url', 'handled', 'mechanism']
+    const safeKeys = [
+      'transaction',
+      'browser.name',
+      'server_name',
+      'url',
+      'handled',
+      'mechanism',
+      // ordinary names that merely end in "key" — the separator-optional credential
+      // matching must not start swallowing these
+      'monkey',
+      'turnkey',
+      'hotkey',
+      'primary_key',
+      'idempotency_key',
+      'cache_key',
+    ]
     const adversarial = {
       ...(eventNode as Record<string, unknown>),
       tags: safeKeys.map((key) => ({ key, value: `KEEP_${key}` })),
