@@ -1,3 +1,5 @@
+import { containsCredentialTerm } from './secret-terms.js'
+
 /** Stable error codes produced by the Sentry client. */
 export type SentryErrorCode =
   | 'AUTHENTICATION_FAILED'
@@ -18,9 +20,6 @@ export type SentryErrorCode =
 
 /** Maximum length of an upstream explanation echoed back to the caller. */
 export const MAX_DETAIL_CHARS = 200
-
-const SECRET_PATTERN =
-  /(bearer\s|authorization|sntry[us]_|api[_-]?key|secret|pass(?:word|wd|phrase)|pwd|token\s*[:=]|credential|private[_-]?key|access[_-]?key|ssh[_-]?key|signing[_-]?key|jwt|dsn|signature)/i
 
 const REGION_HINT = 'Verify baseUrl matches your Sentry region (for example https://de.sentry.io/).'
 
@@ -146,7 +145,7 @@ export function sanitizeUpstreamDetail(body: unknown, token: string): string | u
     .trim()
   if (!cleaned) return undefined
   if (token && cleaned.includes(token)) return undefined
-  if (SECRET_PATTERN.test(cleaned)) return undefined
+  if (containsCredentialTerm(cleaned)) return undefined
   return cleaned.length > MAX_DETAIL_CHARS ? `${cleaned.slice(0, MAX_DETAIL_CHARS)}…` : cleaned
 }
 

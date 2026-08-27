@@ -57,6 +57,41 @@ describe('sanitizeUpstreamDetail', () => {
     expect(sanitizeUpstreamDetail({ detail }, TOKEN)).toBeUndefined()
   })
 
+  it.each([
+    'accessToken sk_live_ABC',
+    'apiToken sk_live_ABC',
+    'api key AKIA-BAIT rejected',
+    'api.key BAIT',
+    'apiKey BAIT',
+    'private key BAIT',
+    'private.key BAIT',
+    'privateKey BAIT',
+    'access key AKIA-BAIT',
+    'access.key BAIT',
+    'accessKey BAIT',
+    'ssh key BAIT',
+    'ssh.key BAIT',
+    'sshKey BAIT',
+    'signing key BAIT',
+    'signing.key BAIT',
+    'signingKey BAIT',
+    'encryption key BAIT',
+    'connection string postgres://u:p@h/db',
+    'database url postgres://u:p@h/db',
+    'bearer BAIT',
+  ])('drops detail naming a credential with any separator: %s', (detail) => {
+    expect(sanitizeUpstreamDetail({ detail }, TOKEN)).toBeUndefined()
+  })
+
+  it('still lets ordinary search errors through', () => {
+    expect(sanitizeUpstreamDetail({ detail: '"foo" is not a supported search key' }, TOKEN)).toBe(
+      '"foo" is not a supported search key',
+    )
+    expect(sanitizeUpstreamDetail({ detail: 'invalid sort option' }, TOKEN)).toBe(
+      'invalid sort option',
+    )
+  })
+
   it('collapses control characters and repeated whitespace', () => {
     expect(sanitizeUpstreamDetail({ detail: '  a\r\nb\t\tc   d  ' }, TOKEN)).toBe('a b c d')
   })
@@ -89,6 +124,23 @@ describe('createHttpError', () => {
     expect(error.message).toBe('Sentry rejected the search query. Check the Sentry search syntax.')
     expect(error.detail).toBeUndefined()
   })
+
+  it.each([
+    ['accessToken sk_live_ABC', 'sk_live_ABC'],
+    ['api key AKIA-BAIT rejected', 'AKIA-BAIT'],
+    ['access.key BAIT', 'BAIT'],
+  ])(
+    'never surfaces a credential-bearing detail through the 400 error surface: %s',
+    (raw, bait) => {
+      const detail = sanitizeUpstreamDetail({ detail: raw }, TOKEN)
+      const error = createHttpError(400, { isSearch: true, detail })
+
+      expect(detail).toBeUndefined()
+      expect(error.detail).toBeUndefined()
+      expect(error.message).not.toContain(bait)
+      expect(JSON.stringify(error.toJSON())).not.toContain(bait)
+    },
+  )
 
   it('maps a non-search 400 to SENTRY_HTTP_ERROR', () => {
     expect(createHttpError(400, {}).code).toBe('SENTRY_HTTP_ERROR')
