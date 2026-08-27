@@ -254,28 +254,88 @@ describe('trimEvent security stripping', () => {
     expect(result.trimmed?.omittedTags).toBeGreaterThan(0)
   })
 
-  it('drops credential and PII naming variants from custom tags', () => {
-    const riskyKeys = [
-      'passwd',
-      'passphrase',
-      'pwd',
-      'jwt',
-      'dsn',
-      'private_key',
-      'access_key_id',
-      'ssh_key',
-      'signing_key',
-      'user_email',
-      'user_ip',
-      'x-amz-signature',
-    ]
+  const SECRET_TAG_BAITS = [
+    // separator variants of the compound credential names spelled out in the spec
+    'api_key',
+    'api-key',
+    'api.key',
+    'api key',
+    'apiKey',
+    'private_key',
+    'private.key',
+    'private key',
+    'privateKey',
+    'access_key',
+    'access.key',
+    'access key',
+    'accessKey',
+    'access_key_id',
+    'ssh_key',
+    'ssh.key',
+    'ssh key',
+    'sshKey',
+    'signing_key',
+    'signing.key',
+    'signing key',
+    'signingKey',
+    'encryption_key',
+    'encryption.key',
+    'encryptionKey',
+    // bare credential words
+    'bearer',
+    'Bearer',
+    'authorization',
+    'jwt',
+    'dsn',
+    'passwd',
+    'passphrase',
+    'pwd',
+    'x-amz-signature',
+    'accessToken',
+    'apiToken',
+    // connection-string style names that embed credentials in their value
+    'connection_string',
+    'connectionString',
+    'database_url',
+    'databaseUrl',
+    'webhook_url',
+    'webhookUrl',
+    // PII
+    'e.mail',
+    'e_mail',
+    'eMail',
+    'user_email',
+    'user.name',
+    'user name',
+    'userName',
+    'user_ip',
+    'creditcard',
+    'credit_card',
+    'creditCard',
+    'ssn',
+  ]
+
+  it.each(SECRET_TAG_BAITS)('drops the secret-looking tag %s entirely', (key) => {
+    const value = `BAIT_${key}_VALUE`
     const adversarial = {
       ...(eventNode as Record<string, unknown>),
-      tags: riskyKeys.map((key) => ({ key, value: `BAIT_${key}` })),
+      tags: [{ key, value }],
     } as JsonValue
     const serialized = JSON.stringify(trimEvent(adversarial, BASE).data)
 
-    for (const key of riskyKeys) expect(serialized).not.toContain(`BAIT_${key}`)
+    expect(serialized).not.toContain(value)
+    expect(serialized).not.toContain(key)
+  })
+
+  it('keeps ordinary tags that merely look similar to secret names', () => {
+    const safeKeys = ['transaction', 'browser.name', 'server_name', 'url', 'handled', 'mechanism']
+    const adversarial = {
+      ...(eventNode as Record<string, unknown>),
+      tags: safeKeys.map((key) => ({ key, value: `KEEP_${key}` })),
+    } as JsonValue
+    const serialized = JSON.stringify(trimEvent(adversarial, BASE).data)
+
+    for (const key of safeKeys) expect(serialized).toContain(`KEEP_${key}`)
   })
 
   it('lifts release, environment, and level to the top level', () => {

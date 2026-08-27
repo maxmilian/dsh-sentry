@@ -1,3 +1,4 @@
+import { isSecretName } from './secret-terms.js'
 import { asObject, isJsonObject, putIfPresent, TITLE_CHARS, truncate } from './trim-shared.js'
 import type { JsonObject, JsonValue, TrimmedMeta } from './types.js'
 
@@ -14,8 +15,6 @@ const MAX_BREADCRUMBS = 20
 const MAX_EXCEPTION_VALUES = 2
 const TAIL_FRAMES = 2
 
-const SECRET_TAG_PATTERN =
-  /(token|secret|pass(?:word|wd|phrase)|pwd|api[_-]?key|auth|cookie|session|credential|private[_-]?key|access[_-]?key|ssh[_-]?key|signing[_-]?key|jwt|dsn|signature|e[-_]?mail|ip[_-]?address|username|(?:^|[_.-])ip(?:$|[_.-]))/i
 const CONTEXT_WHITELIST = ['runtime', 'os', 'browser', 'device', 'trace'] as const
 const TRACE_FIELDS = ['trace_id', 'span_id', 'op'] as const
 const CONTEXT_FIELDS = ['type', 'name', 'version'] as const
@@ -286,7 +285,7 @@ function readTagPair(tag: JsonObject): { key: string; value: string } | undefine
 }
 
 function isDroppableTagKey(key: string): boolean {
-  return key.startsWith('sentry:') || SECRET_TAG_PATTERN.test(key)
+  return key.startsWith('sentry:') || isSecretName(key)
 }
 
 function trimContexts(raw: JsonValue | undefined): JsonValue {
