@@ -664,7 +664,11 @@ Fixtures：`event-node.json`（Node.js 未捕捉例外）、`event-python.json`�
 
 ### 9.6 `tests/plugin.test.ts`
 
-沿用 `dsh-sonarqube` 的做法（含 `Object.hasOwn(globalThis, 'Bun') ? it.skip : it` 的 Bun 規避）：
+**不要**沿用 `dsh-sonarqube` 的 `Object.hasOwn(globalThis, 'Bun') ? it.skip : it` 規避：那會讓最關鍵的斷言（工具註冊、缺憑證不 throw、越界設定要 throw）在執行方式一變時靜默消失，而測試摘要仍全綠。
+
+該規避原本是為了閃避的失敗，根因在相依套件而不在本 repo：`@deepseek-ai/dsh-tools` 的 `defineTool` 以 `Function.prototype.toString.call(Object) === 'function Object() { [native code] }'` 指紋比對 intrinsic prototype，而 JavaScriptCore（Bun）印出的是多行版本，於是 `parameters` 一律被判成 `must be an object of value schemas`。專案的測試指令是 `bun run test`（vitest 跑在 Node 上）、`engines` 也只宣告 Node，因此這條路徑不會被踩到；真要在 Bun runtime 下跑（`bun --bun x vitest`）就該讓它紅燈，並回報上游。
+
+測試內容：
 
 - `name === 'dsh-sentry'`、`inject === ['tools']`、`Config` 已定義。
 - `Config.meta.description` 與各欄位描述四語齊全。
