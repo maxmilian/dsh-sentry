@@ -28,7 +28,7 @@ All tools are read-only. Version 0.1 does not modify issues, create releases, or
 - DeepSeek Harness with compatible `@deepseek-ai/dsh-tools` APIs
 - Node.js 22.19 or newer in the 22.x line, or Node.js 24 or newer
 - Bun 1.3.5 or newer when installing from GitHub source or developing locally
-- A Sentry auth token with read access to the requested organization
+- A Sentry **User Auth Token** (`sntryu_`) with read access to the requested organization
 
 ## Token scopes
 
@@ -38,15 +38,21 @@ All tools are read-only. Version 0.1 does not modify issues, create releases, or
 | `project:read` | `/projects/{org}/{project}/issues/` |
 | `event:read` | `/issues/{id}/`, `/issues/{id}/events/latest/`, `/projects/{org}/{project}/events/{event_id}/` |
 
-The simplest safe token comes from `sentry auth login --read-only`, which requests exactly
+Use a **User Auth Token** (`sntryu_`) with `event:read`, `org:read`, and `project:read`. The
+simplest safe one comes from `sentry auth login --read-only`, which requests exactly
 `project:read`, `org:read`, `event:read`, `member:read`, and `team:read`.
+
+An **Organization Auth Token** (`sntrys_`) does not work: Sentry fixes its scope set to `org:ci`
+(Source Map Upload, Release Creation, Code Mappings) with no way to add read scopes, so every read
+path here returns HTTP 403. Verified against sentry.io on 2026-08-27 — see
+[`docs/live-verification.md`](docs/live-verification.md).
 
 ## Configuration
 
 | Field | Environment variable | Default | Notes |
 | --- | --- | --- | --- |
 | `baseUrl` | `SENTRY_URL` | `https://sentry.io/` | Site root URL. Use `https://de.sentry.io/` for the EU region. A trailing `/api/0` is stripped automatically. |
-| `token` | `SENTRY_AUTH_TOKEN` | required | User or organization auth token. Never returned or logged. |
+| `token` | `SENTRY_AUTH_TOKEN` | required | User auth token (`sntryu_`). Organization auth tokens are `org:ci`-only and are rejected with 403. Never returned or logged. |
 | `org` | `SENTRY_ORG` | required | Organization slug. Fixed for the whole plugin instance. |
 | `locale` | — | `en` | `en`, `zh-TW`, `zh-CN`, or `ja`. Selects the language of tool and parameter descriptions. |
 | `includeFrameVars` | `SENTRY_INCLUDE_FRAME_VARS` | `false` | Keep stack frame local variables. Only the literal string `true` enables it. Agents cannot override this. |

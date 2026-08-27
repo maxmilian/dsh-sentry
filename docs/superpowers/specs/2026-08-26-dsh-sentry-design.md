@@ -692,7 +692,7 @@ Fixtures：`event-node.json`（Node.js 未捕捉例外）、`event-python.json`�
 | V2 | 是否有更寬鬆的 `statsPeriod`（`7d` / `30d` / `90d`）可用 | v0.1 不開放 | 確認可用則記錄於 spec 附註，v0.2 放寬（不改 v0.1） |
 | V3 | `/organizations/{org}/shortids/{short_id}/` 在自架存在且回合法 `groupId` | 自動解析 short id | 不存在 → 保留解析路徑，但把該 endpoint 的 404 特別映射成訊息「此 Sentry 版本不支援 short id，請改用數字 issue id」；回應形狀不同（`group.id` 巢狀）→ 在 §3.3 的取值路徑追加該欄位，仍以 `NUMERIC_ID_PATTERN` 驗證 |
 | V4 | org 層 issue 搜尋不帶 `project` 參數時能正常回全 org 結果 | org 層不做專案過濾 | **回退一**：若該版本要求必帶 → 固定附 `project=-1`（Sentry 的「全部專案」慣用值）；**回退二**：若 `project=-1` 也不被接受 → `project_slug` 改為必填、移除 org 層路徑，並同步修改 §3.2 的 description 與 D4 |
-| V5 | Org Auth Token（`sntrys_`）對 `/issues/{id}/` 與 `/issues/{id}/events/latest/` 可用 | README 建議 Org Auth Token | 不可用 → README 改建議 User Auth Token，scope 表註明 |
+| V5 | ~~Org Auth Token（`sntrys_`）對 `/issues/{id}/` 與 `/issues/{id}/events/latest/` 可用~~ → **已走回退方案**：User Auth Token（`sntryu_`，scope `event:read` / `org:read` / `project:read`）對兩個 endpoint 可用 | README 建議 **User Auth Token** | 2026-08-27 對 sentry.io 實測：Org Auth Token 回 **403**，且 Sentry 的 Create Organization Token 頁面把 scope 固定為 `org:ci`（Source Map Upload / Release Creation / Code Mappings），設計上就不支援讀 issue/event。四語 README 與 scope 表已同步改為 User Auth Token。詳見 `docs/live-verification.md` |
 | V6 | `sort=recommended` 在自架回 400 | 映射為 `UNSUPPORTED_BY_INSTANCE` | 回其他狀態碼 → 依實際狀態碼調整映射條件 |
 | V7 | issue / projects 列表 endpoint 的 JSON 頂層確為陣列，且 `Link` / `X-Hits` header 存在 | client 支援陣列頂層、解析兩個 header | `X-Hits` 不存在 → `matchingCount` 自然不帶出，無需改碼（已是 optional） |
 | V8 | 400 的 body 確實有 `detail` 欄位且為 string | `sanitizeUpstreamDetail` 優先取 `detail`、次取 `error` | 欄位名不同 → 在 §6.2 過濾規則第 1 條的欄位清單追加該欄位名 |

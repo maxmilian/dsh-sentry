@@ -28,7 +28,7 @@
 - 互換性のある `@deepseek-ai/dsh-tools` API を備えた DeepSeek Harness
 - Node.js 22.19 以上（22.x 系）または Node.js 24 以上
 - GitHub ソースからのインストールやローカル開発には Bun 1.3.5 以上
-- 対象組織への読み取り権限を持つ Sentry auth token
+- 対象組織への読み取り権限を持つ Sentry **User Auth Token**（`sntryu_`）
 
 ## トークンのスコープ
 
@@ -38,15 +38,21 @@
 | `project:read` | `/projects/{org}/{project}/issues/` |
 | `event:read` | `/issues/{id}/`、`/issues/{id}/events/latest/`、`/projects/{org}/{project}/events/{event_id}/` |
 
-最も簡単で安全なのは `sentry auth login --read-only` で発行するトークンです。これは
+**User Auth Token**（`sntryu_`）を使用し、スコープに `event:read`、`org:read`、`project:read` を
+含めてください。最も簡単で安全なのは `sentry auth login --read-only` で発行するトークンです。これは
 `project:read`、`org:read`、`event:read`、`member:read`、`team:read` のみを要求します。
+
+**Organization Auth Token**（`sntrys_`）は使えません。Sentry がスコープを `org:ci`（Source Map
+Upload、Release Creation、Code Mappings）に固定しており、読み取りスコープを追加できないため、本
+プラグインのすべての読み取り経路が HTTP 403 になります。2026-08-27 に sentry.io で実測確認済みです
+（[`docs/live-verification.md`](docs/live-verification.md) を参照）。
 
 ## 設定
 
 | 項目 | 環境変数 | 既定値 | 備考 |
 | --- | --- | --- | --- |
 | `baseUrl` | `SENTRY_URL` | `https://sentry.io/` | サイトのルート URL。EU リージョンでは `https://de.sentry.io/` を使用します。末尾の `/api/0` は自動的に取り除かれます。 |
-| `token` | `SENTRY_AUTH_TOKEN` | 必須 | User または Organization の auth token。返却もログ出力もされません。 |
+| `token` | `SENTRY_AUTH_TOKEN` | 必須 | User auth token（`sntryu_`）。Organization auth token は `org:ci` のみのため 403 になります。返却もログ出力もされません。 |
 | `org` | `SENTRY_ORG` | 必須 | 組織 slug。プラグインインスタンス全体で固定されます。 |
 | `locale` | — | `en` | `en`、`zh-TW`、`zh-CN`、`ja` のいずれか。ツールとパラメータの説明の言語を選びます。 |
 | `includeFrameVars` | `SENTRY_INCLUDE_FRAME_VARS` | `false` | スタックフレームのローカル変数を残すかどうか。環境変数は文字列 `true` のときのみ有効で、エージェントからは変更できません。 |

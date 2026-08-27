@@ -26,7 +26,7 @@ metadata，並在 `meta.trimmed` 告訴你它捨棄了什麼。
 - 具備相容 `@deepseek-ai/dsh-tools` API 的 DeepSeek Harness
 - Node.js 22.19 以上（22.x 線）或 Node.js 24 以上
 - 從 GitHub 原始碼安裝或本機開發時需要 Bun 1.3.5 以上
-- 一組對目標組織具備讀取權限的 Sentry auth token
+- 一組對目標組織具備讀取權限的 Sentry **User Auth Token**（`sntryu_`）
 
 ## Token scope
 
@@ -36,15 +36,21 @@ metadata，並在 `meta.trimmed` 告訴你它捨棄了什麼。
 | `project:read` | `/projects/{org}/{project}/issues/` |
 | `event:read` | `/issues/{id}/`、`/issues/{id}/events/latest/`、`/projects/{org}/{project}/events/{event_id}/` |
 
-最單純又安全的做法是用 `sentry auth login --read-only` 產生 token，它剛好只要求
-`project:read`、`org:read`、`event:read`、`member:read`、`team:read`。
+請使用 **User Auth Token**（`sntryu_`），scope 需含 `event:read`、`org:read`、`project:read`。最單純
+又安全的做法是用 `sentry auth login --read-only` 產生 token，它剛好只要求 `project:read`、
+`org:read`、`event:read`、`member:read`、`team:read`。
+
+**Organization Auth Token**（`sntrys_`）不適用：Sentry 把它的 scope 固定為 `org:ci`（Source Map
+Upload、Release Creation、Code Mappings），無法加上任何讀取 scope，因此本外掛的每一條讀取路徑都會
+回 HTTP 403。此結論已於 2026-08-27 對 sentry.io 實測確認，見
+[`docs/live-verification.md`](docs/live-verification.md)。
 
 ## 設定
 
 | 欄位 | 環境變數 | 預設值 | 說明 |
 | --- | --- | --- | --- |
 | `baseUrl` | `SENTRY_URL` | `https://sentry.io/` | 站台根網址。歐盟區請用 `https://de.sentry.io/`。結尾的 `/api/0` 會自動剝除。 |
-| `token` | `SENTRY_AUTH_TOKEN` | 必填 | User 或 Organization auth token。永不回傳、永不寫入日誌。 |
+| `token` | `SENTRY_AUTH_TOKEN` | 必填 | User auth token（`sntryu_`）。Organization auth token 只有 `org:ci`，會被回 403。永不回傳、永不寫入日誌。 |
 | `org` | `SENTRY_ORG` | 必填 | 組織 slug，整個外掛實例固定使用。 |
 | `locale` | — | `en` | `en`、`zh-TW`、`zh-CN` 或 `ja`，決定工具與參數描述的語言。 |
 | `includeFrameVars` | `SENTRY_INCLUDE_FRAME_VARS` | `false` | 是否保留 stacktrace 的區域變數。環境變數只有字串 `true` 才會開啟，agent 無法覆寫。 |
