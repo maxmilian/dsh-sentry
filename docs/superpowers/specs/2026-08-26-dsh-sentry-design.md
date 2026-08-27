@@ -596,7 +596,7 @@ dsh-sentry/
 client 建構子接受 `fetchImplementation` 注入（同 sonarqube），測試傳入 `vi.fn<MockFetch>()`。**斷言 client 方法回的 `data` 是未裁剪的原始 JSON**（例如原始 `stats` 欄位還在），確立 §7.1 的分層。
 
 - config 解析：plugin config 覆蓋 env；缺 token / 缺 org 各丟 `INVALID_CONFIG`；baseUrl 非 http(s) / 含帳密 / 含 query 各丟錯；`https://sentry.io/api/0/` 正規化成 `https://sentry.io/`；子路徑 `https://x.com/sentry/` 組出 `https://x.com/sentry/api/0/…`；`SENTRY_INCLUDE_FRAME_VARS='TRUE'` 開啟、`'1'` / `'yes'` / 空字串不開啟；`locale` 非四語之一 → `INVALID_CONFIG`。
-- 格式常數（§2.5）：`org` 與 `project_slug` 用**同一個** `SLUG_PATTERN`（同一組非法值對兩者都丟 `INVALID_INPUT`）；`123-456` 判定為數字 id 而非 short id（只發一次 fetch）；`proj-abc` 小寫經 `toUpperCase()` 後仍判定為 short id；`-A-1` 丟 `INVALID_INPUT`。
+- 格式常數（§2.5）：`org` 與 `project_slug` 用**同一個** `SLUG_PATTERN`（同一組非法值對兩者都丟 `INVALID_INPUT`）；`123-456` 判定為 short id 而非數字 id（依 §2.5 的判定順序，會先打 `shortids/123-456/`）；`proj-abc` 小寫經 `toUpperCase()` 後仍判定為 short id；`-A-1` 丟 `INVALID_INPUT`。
 - URL 組裝：每個工具打到正確 endpoint、帶對 query（`per_page` / `statsPeriod` / `query` / `environment` / `cursor` / `sort`）。
 - `Authorization: Bearer` header 正確；**斷言 error 訊息與 `toJSON()` 都不含 token 字串**。
 - 參數驗證：`limit` 0 / 101、`cursor` 格式錯、`event_id` 非 32 hex、`project_slug` 含 `/` 或 `..` → 各丟 `INVALID_INPUT`。
