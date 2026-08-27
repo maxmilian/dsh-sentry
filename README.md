@@ -156,7 +156,15 @@ Tests use Vitest with mocked `fetch` and do not require a live Sentry instance. 
 lines, statements, functions, and branches are all set to at least 80%.
 
 Live compatibility against Sentry SaaS and a self-hosted instance has not been recorded for this
-release yet; verify the plugin against your own instance before relying on it in CI.
+release yet. The checklist required before tagging v0.1.0 lives in
+[`docs/live-verification.md`](docs/live-verification.md); run it against your own instance with:
+
+```bash
+bun run build
+SENTRY_TOKEN=... SENTRY_ORG=... node scripts/live-verify.mjs
+```
+
+The script is read-only and exits 1 when credentials are missing.
 
 ## License
 

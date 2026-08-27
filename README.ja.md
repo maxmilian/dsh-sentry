@@ -155,7 +155,16 @@ bun pm pack
 lines、statements、functions、branches のカバレッジ基準はいずれも 80% 以上に設定されています。
 
 本リリースでは Sentry SaaS およびセルフホストインスタンスに対する実機互換性検証をまだ記録して
-いません。CI で本プラグインに依存する前に、ご自身のインスタンスで検証してください。
+いません。v0.1.0 タグを打つ前に必要なチェックリストは
+[`docs/live-verification.md`](docs/live-verification.md) にあります。ご自身のインスタンスに対して
+次のように実行してください:
+
+```bash
+bun run build
+SENTRY_TOKEN=... SENTRY_ORG=... node scripts/live-verify.mjs
+```
+
+このスクリプトは読み取り専用で、認証情報が欠けている場合は exit 1 で終了します。
 
 ## ライセンス
 

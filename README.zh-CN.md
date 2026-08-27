@@ -141,8 +141,15 @@ bun pm pack
 测试使用 Vitest 搭配 mock `fetch`，不需要真实的 Sentry 实例。lines、statements、functions、branches
 四项覆盖率门槛都设在 80% 以上。
 
-本版本尚未记录对 Sentry SaaS 与自建实例的实机兼容性验证；在 CI 中依赖本插件之前，请先针对你自己的
-实例验证。
+本版本尚未记录对 Sentry SaaS 与自建实例的实机兼容性验证。发布 v0.1.0 tag 前必须完成的检查清单放在
+[`docs/live-verification.md`](docs/live-verification.md)；请针对你自己的实例执行：
+
+```bash
+bun run build
+SENTRY_TOKEN=... SENTRY_ORG=... node scripts/live-verify.mjs
+```
+
+该脚本纯只读，缺少凭证时以 exit 1 结束。
 
 ## 许可
 
