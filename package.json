@@ -1,6 +1,6 @@
 {
   "name": "dsh-sentry",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read-only Sentry issue and event tools for DeepSeek Harness.",
   "homepage": "https://github.com/maxmilian/dsh-sentry#readme",
   "bugs": {
